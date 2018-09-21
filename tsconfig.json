@@ -26,6 +26,7 @@
     "src/settings.ts",
     "src/metadataUtils.ts",
     "src/scrollbarUtil.ts",
+    "src/selectionSaveUtils.ts",
     "src/lassoSelectionUtil.ts",
     "src/utils.ts",
     "src/utils/legendUtils.ts",
