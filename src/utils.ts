@@ -251,4 +251,23 @@ module powerbi.extensibility.visual.visualUtils {
     export function isSelected(selected: boolean, highlight: boolean, hasSelection: boolean, hasPartialHighlights: boolean): boolean {
         return !(hasPartialHighlights && !highlight || hasSelection && !selected);
     }
+
+    export function compareObjects(obj1: any[], obj2: any[], property: string): boolean {
+        let isEqual: boolean = false;
+
+        if (obj1.length > 0 && obj2.length > 0 && obj1.length === obj2.length) {
+            isEqual = true;
+            obj1.forEach((o1, i) => {
+                obj2.forEach((o2, j) => {
+                    if (i === j) {
+                        isEqual = isEqual && o1[property] === o2[property];
+                    }
+                });
+            });
+        } else if (obj1.length === 0 && obj2.length === 0) {
+            isEqual = true;
+        }
+
+        return isEqual;
+    }
 }

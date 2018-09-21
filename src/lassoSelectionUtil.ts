@@ -69,17 +69,6 @@ module powerbi.extensibility.visual.visualUtils {
         // Events
         private onMousedown(): void {
             let e: MouseEvent = d3.event as MouseEvent;
-            let chartBoundaries: ClientRect = this.visual.getChartBoundaries();
-
-            if (e === null
-                || e.which !== 1
-                || e.clientX < chartBoundaries.left
-                || e.clientX > chartBoundaries.right
-                || e.clientY < chartBoundaries.top
-                || e.clientY > chartBoundaries.bottom) {
-
-                return;
-            }
 
             this.selection.active = true;
             this.selection.clickEvent = e;
@@ -321,24 +310,23 @@ module powerbi.extensibility.visual.visualUtils {
 
         private calculateRectDimensions(cursor: CursorPosition): void {
             let selection: Selection = this.selection;
-            let chartBoundaries: ClientRect = this.visual.getChartBoundaries();
 
             if (selection.startX <= cursor.x) {
                 selection.x = selection.startX;
-                selection.width = Math.min(cursor.x, chartBoundaries.right) - selection.startX;
+                selection.width = cursor.x - selection.startX;
                 selection.endX = selection.x + selection.width;
             } else {
-                selection.x = Math.max(cursor.x, chartBoundaries.left);
+                selection.x = cursor.x;
                 selection.width = selection.startX - selection.x;
                 selection.endX = selection.x;
             }
 
             if (selection.startY <= cursor.y) {
                 selection.y = selection.startY;
-                selection.height = Math.min(cursor.y, chartBoundaries.bottom) - selection.startY;
+                selection.height = cursor.y - selection.startY;
                 selection.endY = selection.y + selection.height;
             } else {
-                selection.y = Math.max(cursor.y, chartBoundaries.top);
+                selection.y = cursor.y;
                 selection.height = selection.startY - selection.y;
                 selection.endY = selection.y;
             }

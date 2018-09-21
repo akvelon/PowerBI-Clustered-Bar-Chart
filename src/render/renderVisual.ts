@@ -31,6 +31,7 @@ module powerbi.extensibility.visual {
             visualInteractivityService: IInteractivityService,
             visualBehavior: IInteractiveBehavior,
             tooltipServiceWrapper: ITooltipServiceWrapper,
+            host: IVisualHost,
             hasHighlight: boolean) {
             // Select all bar groups in our chart and bind them to our categories.
             // Each group will contain a set of bars, one for each of the values in category.
@@ -125,6 +126,8 @@ module powerbi.extensibility.visual {
                     bars: barSelect,
                     clearCatcher: clearCatcher,
                     interactivityService: visualInteractivityService,
+                    host: host,
+                    selectionSaveSettings: settings.selectionSaveSettings
                 };
 
                 interactivityService.bind(data.dataPoints, visualBehavior, behaviorOptions);
