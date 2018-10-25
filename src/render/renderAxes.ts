@@ -58,6 +58,7 @@ module powerbi.extensibility.visual {
                 scaleType: valueAxisScale,
                 useTickIntervalForDisplayUnits: true,
                 axisDisplayUnits: settings.valueAxis.displayUnits,
+                disableNice: settings.valueAxis.start != null || settings.valueAxis.end != null,
                 axisPrecision: xAxisPrecision
             });
 
@@ -111,6 +112,7 @@ module powerbi.extensibility.visual {
                 isVertical: true,
                 isCategoryAxis: true,
                 useTickIntervalForDisplayUnits: true,
+                disableNice: axisType === "continuous" && (settings.categoryAxis.start != null || settings.categoryAxis.end != null),
                 getValueFn: (index: number, dataType: valueType): any => {
                     if (dataType.dateTime && dateColumnFormatter) {
                         let options = {};
@@ -259,11 +261,11 @@ module powerbi.extensibility.visual {
             let showYAxisTitle: boolean = settings.categoryAxis.show && settings.categoryAxis.showTitle;
             let showXAxisTitle: boolean = settings.valueAxis.show && settings.valueAxis.showTitle;
 
-            if (!showYAxisTitle) {
+            if (!showXAxisTitle) {
                 axisLabelsData[0] = null;
             }
 
-            if (!showXAxisTitle) {
+            if (!showYAxisTitle) {
                 axisLabelsData[1] = null;
             }
 
@@ -375,12 +377,33 @@ module powerbi.extensibility.visual {
                 let dataDomainMinY: number = d3.min(visibleDatapoints, d => <number>d.category);
                 let dataDomainMaxY: number = d3.max(visibleDatapoints, d => <number>d.category);
 
-                dataDomainY = [dataDomainMinY, dataDomainMaxY];
+                let start = settings.categoryAxis.start;
+                let end = settings.categoryAxis.end;
+
+                dataDomainY = [start != null ? settings.categoryAxis.start : dataDomainMinY, end != null ? end : dataDomainMaxY];
+            }
+
+            let constantLineValue: number = settings.constantLine.value;
+
+            if (constantLineValue || constantLineValue === 0) {
+                dataDomainMinX = dataDomainMinX > constantLineValue ? constantLineValue : dataDomainMinX;
+                dataDomainMaxX = dataDomainMaxX < constantLineValue ? constantLineValue : dataDomainMaxX;
+            }
+ 
+            let start = settings.valueAxis.start;
+            let end = settings.valueAxis.end;
+
+            if (start != null){
+                dataDomainMinX = start;
+            }
+
+            if ( settings.valueAxis.axisScale === 'log' && dataDomainMinX === 0 ){
+                dataDomainMinX = 1;
             }
 
             return {
                 yAxisDomain: dataDomainY,
-                xAxisDomain: [dataDomainMinX, dataDomainMaxX]
+                xAxisDomain: [dataDomainMinX, end != null ? end : dataDomainMaxX]
             };
         }
     }

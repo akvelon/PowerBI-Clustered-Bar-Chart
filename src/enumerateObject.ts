@@ -85,6 +85,8 @@ module powerbi.extensibility.visual {
                         if (settings.categoryAxis.axisType === "categorical") {
                             delete instance.properties["axisScale"];
                             delete instance.properties["axisStyle"];
+                            delete instance.properties["start"];
+                            delete instance.properties["end"];
                         } else if (settings.categoryAxis.axisType === "continuous") {
                             delete instance.properties["minCategoryWidth"];
                             delete instance.properties["maximumSize"];
@@ -110,6 +112,18 @@ module powerbi.extensibility.visual {
                         delete instance.properties["gridlinesColor"];
                         delete instance.properties["strokeWidth"];
                         delete instance.properties["lineStyle"];
+                    }
+
+                    break;
+                }
+                case "constantLine": {
+                    if (!settings.constantLine.dataLabelShow) {
+                        delete instance.properties["fontColor"];
+                        delete instance.properties["text"];
+                        delete instance.properties["horizontalPosition"];
+                        delete instance.properties["verticalPosition"];
+                        delete instance.properties["displayUnits"];
+                        delete instance.properties["precision"];
                     }
 
                     break;
