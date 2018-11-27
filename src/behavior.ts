@@ -87,13 +87,11 @@ module powerbi.extensibility.visual {
                     }
 
                     return Visual.DefaultStrokeWidth;
+                },
+                "stroke-opacity": p => {
+                    return hasSelection || hasHighlight ? 1 : 0
                 }
             });
-
-            if ((hasSelection || currentSelection.length === 0) && !visualUtils.compareObjects(currentSelection, this.options.selectionSaveSettings, "identity.key")) {
-                this.visual.skipScrollbarUpdate = true;
-                selectionSaveUtils.saveSelection(currentSelection, this.options.host);
-            }
         }
     }
 }

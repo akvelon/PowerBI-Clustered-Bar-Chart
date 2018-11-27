@@ -94,8 +94,11 @@ module powerbi.extensibility.visual {
                         }
                     } else {
                         delete instance.properties["axisType"];
-                        delete instance.properties["axisScale"];
-                        delete instance.properties["axisStyle"];
+                        delete instance.properties["axisScale"]; 
+                        delete instance.properties["axisStyle"];                         
+                        delete instance.properties["precision"];
+                        delete instance.properties["start"];
+                        delete instance.properties["end"];
                     }
 
                     break;
@@ -127,6 +130,17 @@ module powerbi.extensibility.visual {
                     }
 
                     break;
+                }
+                case "smallMultiple": {
+                    if (settings.smallMultiple.layoutMode === LayoutMode.Matrix) {
+                        delete instance.properties["maxRowWidth"];
+                    }
+
+                    if (!settings.smallMultiple.showChartTitle) {
+                        delete instance.properties["fontFamily"];
+                        delete instance.properties["fontSize"];
+                        delete instance.properties["fontColor"];
+                    }
                 }
             }
         }
