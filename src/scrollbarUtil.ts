@@ -88,18 +88,18 @@ module powerbi.extensibility.visual.visualUtils {
             this.updateMeasurements();
         }
 
-        updateData(action: ScrollbarState, updateType: VisualUpdateType, skipUpdatePosition: boolean): void {
+        updateData(action: ScrollbarState, updateType: VisualUpdateType): void {
             this.settings.minCategorySpace =  this.visual.getSettings().categoryAxis.minCategoryWidth;
 
             let availableSpace: number = this.visual.viewport.height - this.visual.visualMargin.top - this.visual.visualMargin.bottom;
 
             this.capacity = Math.floor(availableSpace / this.settings.minCategorySpace);
-            this.scrolling.positionsCount = this.visual.allUniqueCategories.length - this.capacity;
+            this.scrolling.positionsCount = this.visual.categoriesCount - this.capacity;
 
             if ( this.allow && action === ScrollbarState.Enable && this.scrolling.positionsCount > 0 ) {
                 this.enable();
                 const resizeEndCode = 36; // It's incorrect in the VisualUpdateType enum for some reason
-                if (skipUpdatePosition || updateType === VisualUpdateType.Resize || updateType === resizeEndCode) {
+                if (updateType === VisualUpdateType.Resize || updateType === resizeEndCode ){
                     this.correctScrollingPosition();
                 } else {
                     this.updateScrollingPosition(0);

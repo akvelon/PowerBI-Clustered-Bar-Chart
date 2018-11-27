@@ -34,7 +34,8 @@ module powerbi.extensibility.visual {
     public selectionSaveSettings = {
       selection: []
     };
-    public dataPoint: dataPointSettings = new dataPointSettings();
+    public dataPoint: dataPointSettings = new dataPointSettings(); 
+    public smallMultiple: smallMultipleSettings = new smallMultipleSettings();
     public legend: legendSettings = new legendSettings();
     public categoryAxis: categoryAxisSettings = new categoryAxisSettings();
     public valueAxis: valueAxisSettings = new valueAxisSettings();
@@ -48,6 +49,11 @@ module powerbi.extensibility.visual {
     OutsideEnd = <any>"outside",
     InsideBase = <any>"base",
     InsideCenter = <any>"center"
+  }
+
+  export enum LayoutMode {
+    Flow = <any>"flow",
+    Matrix = <any>"matrix"
   }
 
   // tslint:disable-next-line:class-name
@@ -212,5 +218,17 @@ module powerbi.extensibility.visual {
     public verticalPosition: VerticalPosition = VerticalPosition.Bottom;
     public displayUnits: number = 0;
     public precision: number = null;
+  }
+  export class smallMultipleSettings {
+    public layoutMode: LayoutMode = LayoutMode.Flow;
+    public minUnitWidth: number = 150;
+    public minUnitHeight: number = 120;
+    public maxRowWidth: number = 4;
+    public showChartTitle: boolean = true;
+    public textcolor: string = "#000000";
+    public fontFamily: string = DefaultFontFamily;
+    public fontSize: number = 9;
+    public fontColor: string = "#000000";
+    public showSeparators: boolean = true;
   }
 }
