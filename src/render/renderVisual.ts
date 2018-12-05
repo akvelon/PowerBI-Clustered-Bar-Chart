@@ -175,7 +175,7 @@ module powerbi.extensibility.visual {
                         return d.labelCoordinates.x - DataLabelHelper.labelBackgroundXShift;
                     },
                     y: d => {
-                        return d.labelCoordinates.x - d.labelCoordinates.height - DataLabelHelper.labelBackgroundYShift;
+                        return d.labelCoordinates.y - d.labelCoordinates.height - DataLabelHelper.labelBackgroundYShift;
                     },
                     rx: 4,
                     ry: 4,
@@ -227,7 +227,7 @@ module powerbi.extensibility.visual {
 
             labelSelection
                 .attr("transform", (p: VisualDataPoint) => {
-                    return translate(p.labelCoordinates.x, p.labelCoordinates.x);
+                    return translate(p.labelCoordinates.x, p.labelCoordinates.y);
                 });
 
             labelSelection
