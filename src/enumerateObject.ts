@@ -47,6 +47,9 @@ module powerbi.extensibility.visual {
             let instances: VisualObjectInstance[] = (instanceEnumeration as VisualObjectInstanceEnumerationObject).instances;
             let instance: VisualObjectInstance = instances[0];
 
+            const isSmallMultiple: boolean = visualData.isSmallMultiple;
+            const isCategorical: boolean = settings.categoryAxis.axisType === "categorical";
+
             switch (instance.objectName) {
                 case "dataPoint": {
                     if (visualData && visualData.legendData && visualData.legendData.dataPoints && visualData.legendData.dataPoints.length) {
@@ -81,6 +84,17 @@ module powerbi.extensibility.visual {
                         delete instance.properties["titleFontFamily"];
                     }
 
+                    if (!isSmallMultiple) {
+                        delete instance.properties["rangeType"];
+                        delete instance.properties["rangeTypeNoScalar"];
+                    } else {
+                        if (yIsScalar && !isCategorical) {
+                            delete instance.properties["rangeTypeNoScalar"];
+                        } else {
+                            delete instance.properties["rangeType"];
+                        }
+                    }
+
                     if (yIsScalar) {
                         if (settings.categoryAxis.axisType === "categorical") {
                             delete instance.properties["axisScale"];
@@ -91,6 +105,13 @@ module powerbi.extensibility.visual {
                             delete instance.properties["minCategoryWidth"];
                             delete instance.properties["maximumSize"];
                             delete instance.properties["innerPadding"];
+
+                            if (visualData.isSmallMultiple) {
+                                if (settings.categoryAxis.rangeType !== AxisRangeType.Custom) {                                    
+                                    delete instance.properties["start"];
+                                    delete instance.properties["end"];
+                                }
+                            }
                         }
                     } else {
                         delete instance.properties["axisType"];
@@ -104,6 +125,13 @@ module powerbi.extensibility.visual {
                     break;
                 }
                 case "valueAxis": {
+                    if (!isSmallMultiple) {
+                        delete instance.properties["rangeType"];
+                    } else if (settings.valueAxis.rangeType !== AxisRangeType.Custom) {                                    
+                        delete instance.properties["start"];
+                        delete instance.properties["end"];
+                    }
+
                     if (!settings.valueAxis.showTitle) {
                         delete instance.properties["titleStyle"];
                         delete instance.properties["axisTitleColor"];

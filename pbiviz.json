@@ -1,10 +1,10 @@
 {
   "visual": {
     "name": "clusteredBarChartByAkvelon",
-    "displayName": "Clustered Bar Chart by Akvelon 1.2.1",
     "guid": "clusteredBarChartByAkvelon77BB704116614231891ABD5C195D3DC6",
+    "displayName": "Clustered Bar Chart by Akvelon 1.2.2",
     "visualClassName": "Visual",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "description": "Clustered Bar Chart with rectangle selection support",
     "supportUrl": "http://akvelon.com/feedback",
     "gitHubUrl": ""
