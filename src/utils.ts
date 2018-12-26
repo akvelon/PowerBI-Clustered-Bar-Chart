@@ -35,6 +35,9 @@ module powerbi.extensibility.visual.visualUtils {
 
         const thickness: number = dataPointThickness / clustersCount;
 
+        // Implement correct continuous logic instead of this!!!
+        dataPointThickness = dataPointThickness < 10 / clustersCount ? dataPointThickness : 10 / clustersCount;
+
         dataPoints.forEach(point => {
             let height = 0;
             if (axes.yIsScalar && categoryAxisIsContinuous) {
@@ -107,9 +110,9 @@ module powerbi.extensibility.visual.visualUtils {
             };
         });
 
-        if (categoryAxisIsContinuous) {
-            recalculateThicknessForContinuous(dataPoints, thickness, clustersCount);
-        }
+      //  if (categoryAxisIsContinuous) {
+      //      recalculateThicknessForContinuous(dataPoints, thickness, clustersCount);
+      //  }
     }
 
     function setZeroCoordinatesForPoint(point: VisualDataPoint): void {

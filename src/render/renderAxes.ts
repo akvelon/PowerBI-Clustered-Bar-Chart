@@ -410,6 +410,8 @@ module powerbi.extensibility.visual {
             return [dataDomainMinX, end != null ? end : dataDomainMaxX]
         }
 
+        private static Blank: string = "(Blank)";
+
         public static calculateCategoryDomain(visibleDatapoints: VisualDataPoint[], 
             settings: VisualSettings, 
             metadata: VisualMeasureMetadata, 
@@ -418,14 +420,17 @@ module powerbi.extensibility.visual {
             const categoryType: valueType = axis.getCategoryValueType(metadata.cols.category);
             let isOrdinal: boolean = axis.isOrdinal(categoryType);
 
-            let dataDomainY = visibleDatapoints.map(d => <any>d.category).filter(d => !!d);
+            let dataDomainY = visibleDatapoints.map(d => <any>d.category);
 
             let yIsScalar: boolean = !isOrdinal;
             let axisType: string = !yIsScalar ? "categorical" : settings.categoryAxis.axisType;
 
             if (yIsScalar && axisType === "continuous") {
-                let dataDomainMinY: number = d3.min(visibleDatapoints, d => <number>d.category);
-                let dataDomainMaxY: number = d3.max(visibleDatapoints, d => <number>d.category);
+                dataDomainY = dataDomainY.filter(d => d !== this.Blank);
+                const noBlankCategoryDatapoints: VisualDataPoint[] = visibleDatapoints.filter(d => d.category !== this.Blank);
+
+                let dataDomainMinY: number = d3.min(noBlankCategoryDatapoints, d => <number>d.category);
+                let dataDomainMaxY: number = d3.max(noBlankCategoryDatapoints, d => <number>d.category);
 
                 const skipStartEnd: boolean = isSmallMultiple && settings.categoryAxis.rangeType !== AxisRangeType.Custom;
 

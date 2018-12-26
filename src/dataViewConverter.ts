@@ -166,7 +166,7 @@ module powerbi.extensibility.visual {
 
                 if (value != null) {
                     data.push({
-                        category: !legend ? this.Blank : legend,
+                        category: legend !== 0 && !legend ? this.Blank : legend,
                         series: legend,
                         value: value,
                         shiftValue: 0,
@@ -184,7 +184,7 @@ module powerbi.extensibility.visual {
                         highlightTooltipItems.push(this.createTooltipData(valueMetadata, highlightValue, this.Highlighted));
 
                         data.push({
-                            category: !legend ? this.Blank : legend,
+                            category: legend !== 0 && !legend ? this.Blank : legend,
                             series: legend,
                             value: highlightValue,
                             shiftValue: 0,
@@ -248,7 +248,7 @@ module powerbi.extensibility.visual {
                         }
 
                         data.push({
-                            category: !categoryValue ? "(Blank)" : categoryValue,
+                            category: categoryValue !== 0 && !categoryValue ? "(Blank)" : categoryValue,
                             series: legend,
                             value: value,
                             shiftValue: sum,
@@ -268,7 +268,7 @@ module powerbi.extensibility.visual {
                             highlightTooltipItems.push(this.createTooltipData(valueMetadata, highlightValue, this.Highlighted));
 
                             data.push({
-                                category: !categoryValue ? "(Blank)" : categoryValue,
+                                category: categoryValue !== 0 && !categoryValue ? "(Blank)" : categoryValue,
                                 series: legend,
                                 value: highlightValue,
                                 shiftValue: sum,
@@ -332,7 +332,7 @@ module powerbi.extensibility.visual {
                         }
 
                         data.push({
-                            category: !category ? "(Blank)" : category,
+                            category: category !== 0 && !category ? "(Blank)" : category,
                             value: value,
                             shiftValue: sum,
                             selected: false,
@@ -351,7 +351,7 @@ module powerbi.extensibility.visual {
                             highlightTooltipItems.push(this.createTooltipData(valueMetadata, highlightValue, this.Highlighted));
 
                             data.push({
-                                category: !category ? "(Blank)" : category,
+                                category: category !== 0 && !category ? "(Blank)" : category,
                                 value: highlightValue,
                                 shiftValue: sum,
                                 selected: false,
@@ -425,7 +425,7 @@ module powerbi.extensibility.visual {
                     }
 
                     data.push({
-                        category: !category ? "(Blank)" : category,
+                        category: category !== 0 && !category ? "(Blank)" : category,
                         value: value,
                         shiftValue: 1,
                         colorSaturation: colorSaturation,
@@ -445,7 +445,7 @@ module powerbi.extensibility.visual {
                         highlightTooltipItems.push(this.createTooltipData(valueMetadata, highlightValue, this.Highlighted));
 
                         data.push({
-                            category: !category ? "(Blank)" : category,
+                            category: category !== 0 && !category ? "(Blank)" : category,
                             value: highlightValue,
                             shiftValue: 1,
                             selected: false,
