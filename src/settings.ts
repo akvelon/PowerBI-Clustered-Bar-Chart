@@ -43,6 +43,12 @@ module powerbi.extensibility.visual {
     public constantLine: constantLineSettings = new constantLineSettings();
   }
 
+  export enum AxisRangeType {
+    Common = <any>"common",
+    Separate = <any>"separate",
+    Custom = <any>"custom"
+  }
+
   export enum LabelPosition {
     Auto = <any>"auto",
     InsideEnd = <any>"end",
@@ -117,7 +123,9 @@ module powerbi.extensibility.visual {
     // Axis type
     public axisType: string = "categorical";
     // Axis Scale type
-    public axisScale: string = "linear";
+    public axisScale: string = "linear";     
+    public rangeType: AxisRangeType = AxisRangeType.Common;
+    public rangeTypeNoScalar: AxisRangeType = AxisRangeType.Common;
     // Axis start
     public start: number = null;
     // Axis end
@@ -149,6 +157,7 @@ module powerbi.extensibility.visual {
     public show: boolean = true;
     // Axis Scale type
     public axisScale: string = "linear";
+    public rangeType: AxisRangeType = AxisRangeType.Common;
     // Axis start
     public start: number = null;
     // Axis end

@@ -249,13 +249,15 @@ module powerbi.extensibility.visual.visualUtils {
             track.top = visualMargin.top;
             track.left = this.visual.viewport.width - this.settings.trackSize;
 
-            let legendPosition = this.visual.settings.legend.position;
+            if (this.visual.isLegendNeeded) {
+                let legendPosition = this.visual.settings.legend.position;
 
-            if ( legendPosition === 'Top' || legendPosition === 'TopCenter' ) {
-                track.top += this.visual.legendSize.height;
-            } else if ( legendPosition === 'Right' || legendPosition === 'RightCenter' ) {
-                track.left -= this.visual.legendSize.width;
-            }
+                if ( legendPosition === 'Top' || legendPosition === 'TopCenter' ) {
+                    track.top += this.visual.legendSize.height;
+                } else if ( legendPosition === 'Right' || legendPosition === 'RightCenter' ) {
+                    track.left -= this.visual.legendSize.width;
+                }
+            }   
 
             track.el.style({
                 top: this.track.top + 'px',
