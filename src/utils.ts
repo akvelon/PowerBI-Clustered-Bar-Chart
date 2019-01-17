@@ -36,7 +36,7 @@ module powerbi.extensibility.visual.visualUtils {
         const thickness: number = dataPointThickness / clustersCount;
 
         // Implement correct continuous logic instead of this!!!
-        dataPointThickness = dataPointThickness < 10 / clustersCount ? dataPointThickness : 10 / clustersCount;
+        dataPointThickness = dataPoints.length > 2 ? dataPointThickness : dataPointThickness / 2;
 
         dataPoints.forEach(point => {
             let height = 0;
@@ -44,7 +44,7 @@ module powerbi.extensibility.visual.visualUtils {
                 let start = skipCategoryStartEnd ? null : settings.categoryAxis.start,
                     end = skipCategoryStartEnd ? null : settings.categoryAxis.end;
 
-                height = start != null && start > point.category || dataPointThickness < 0 ? 0 : dataPointThickness;
+                height = start != null && start > point.category || dataPointThickness < 0 ? 0 : dataPointThickness / clustersCount;
                 height = end != null && end <= point.category ? 0 : height;
             } else {
                 height = axes.y.scale.rangeBand() / clustersCount;
@@ -61,7 +61,7 @@ module powerbi.extensibility.visual.visualUtils {
             let y: number = axes.y.scale(point.category);
 
             if (categoryAxisIsContinuous) {
-                y -= thickness / 2;
+                y -= height * clustersCount / 2;
             }
             if ( clustersCount > 1 ){
                 y += height * point.shiftValue;
@@ -309,7 +309,7 @@ module powerbi.extensibility.visual.visualUtils {
                                                 &&  end != null ? x.value <= end : true)
             }
 
-            let dataPointsCount: number = dataPoints.length;
+            let dataPointsCount: number = dataPoints.map(x => x.category).filter((v, i, a) => a.indexOf(v) === i).length;
 
             if (dataPointsCount < 3) {
                 let devider: number = 8;
