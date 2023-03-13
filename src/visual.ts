@@ -944,7 +944,6 @@ export class Visual implements IVisual {
         if (!this.optionsAreValid(options)) {
             return;
         }
-        debugger;
 
         const dataView = options && options.dataViews && options.dataViews[0];
 

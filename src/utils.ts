@@ -67,7 +67,7 @@ export function calculateBarCoordianates(dataPoints: VisualDataPoint[],
             height = start != null && start > point.category || dataPointThickness < 0 ? 0 : dataPointThickness / clustersCount;
             height = end != null && end <= point.category ? 0 : height;
         } else {
-            height = axes.y.scale.range() / clustersCount;
+            height = axes.y.scale.bandwidth() / clustersCount;
         }
 
         if (categoryAxisIsContinuous){
@@ -351,12 +351,14 @@ export function calculateBarHeight(
 export function getLabelsMaxWidth(group: d3Group<any>): number {
     const widths: Array<number> = [];
 
-    group.nodes().forEach((item: any) => {
-        let dimension: ClientRect = item.getBoundingClientRect();
-        widths.push(max([dimension.width, dimension.height]));
-    });
+    if (group) {
+        group.nodes().forEach((item: any) => {
+            let dimension: ClientRect = item.getBoundingClientRect();
+            widths.push(max([dimension.width, dimension.height]));
+        });
+    }
 
-    if (group.size() === 0) {
+    if (!group || group.size() === 0) {
         widths.push(0);
     }
 
@@ -366,12 +368,14 @@ export function getLabelsMaxWidth(group: d3Group<any>): number {
 export function getLabelsMaxHeight(group: d3Group<any>): number {
     const heights: Array<number> = [];
 
-    group.nodes().forEach((item: any) => {
-        let dimension: ClientRect = item.getBoundingClientRect();
-        heights.push(dimension.height);
-    });
+    if (group) {
+        group.nodes().forEach((item: any) => {
+            let dimension: ClientRect = item.getBoundingClientRect();
+            heights.push(dimension.height);
+        });
+    }
 
-    if (group.size() === 0) {
+    if (!group || group.size() === 0) {
         heights.push(0);
     }
 

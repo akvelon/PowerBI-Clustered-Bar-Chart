@@ -437,13 +437,9 @@ export class DataViewConverter<T> {
                 .createSelectionId();
 
             if (value != null) {
-                let color;
-                
-                if (categoryColumn.objects && categoryColumn.objects[i]) {
-                    color = colorHelper.getColorForMeasure(
-                        categoryColumn.objects && categoryColumn.objects[i],
-                        "");
-                }
+                const color = colorHelper.getColorForMeasure(
+                    categoryColumn.objects && categoryColumn.objects[i],
+                    "");
 
                 let tooltipItems: VisualTooltipDataItem[] = [];
 

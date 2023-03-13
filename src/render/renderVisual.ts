@@ -44,7 +44,6 @@ module Selectors {
 
 export class RenderVisual {
     private static Label: ClassAndSelector = createClassAndSelector("label");
-    private static dataLabelMargin: number = 8;
 
     public static render(
         data: VisualData,
@@ -58,13 +57,15 @@ export class RenderVisual {
         hasHighlight: boolean) {
         // Select all bar groups in our chart and bind them to our categories.
         // Each group will contain a set of bars, one for each of the values in category.
-        const barGroupSelect = visualSvgGroup.selectAll(Selectors.BarGroupSelect.selectorName)
+        let barGroupSelect = visualSvgGroup.selectAll(Selectors.BarGroupSelect.selectorName)
             .data([data.dataPoints]);
 
         // When a new category added, create a new SVG group for it.
-        barGroupSelect.enter()
+        const barGroupSelectEnter = barGroupSelect.enter()
             .append("g")
             .attr("class", Selectors.BarGroupSelect.className);
+
+        barGroupSelect = barGroupSelect.merge(barGroupSelectEnter);
 
         // For removed categories, remove the SVG group.
         barGroupSelect.exit()
@@ -76,23 +77,20 @@ export class RenderVisual {
         // Now we bind each SVG group to the values in corresponding category.
         // To keep the length of the values array, we transform each value into object,
         // that contains both value and total count of all values in this category.
-        const barSelect = barGroupSelect
+        let barSelect = barGroupSelect
             .selectAll(Selectors.BarSelect.selectorName)
             .data(data.dataPoints);
-
-        // For each new value, we create a new rectange.
-        barSelect.enter().append("rect")
-            .attr("class", Selectors.BarSelect.className);
-
+        
         // Remove rectangles, that no longer have matching values.
         barSelect.exit()
             .remove();
 
-        // TODO: integrate with scroll
-        let categoryWidth: number = settings.categoryAxis.minCategoryWidth;
-        let innerPadding: number = settings.categoryAxis.innerPadding;
+        // For each new value, we create a new rectange.
+        const barSelectEnter = barSelect.enter().append("rect")
+            .attr("class", Selectors.BarSelect.className);
 
-        let isCategoricalAxisType: boolean = settings.categoryAxis.axisType === "categorical";
+        barSelect = barSelect.merge(barSelectEnter);
+
         // Set the size and position of existing rectangles.
         barSelect
             .attr(
@@ -262,23 +260,31 @@ export class RenderVisual {
                     .selectAll(RenderVisual.Label.selectorName)
                     .data(dataPointsArray);
 
+        
+
+        labelSelection
+            .exit()
+            .remove();
+
         let dataLabelFormatter: IValueFormatter =
                 createFormatter(labelSettings.displayUnits,
                                                 labelSettings.precision,
                                                 metadata.cols.value,
                                                 getValueForFormatter(data));
 
-        labelSelection
+        const labelSelectionEnter = labelSelection
             .enter()
             .append("svg:text");
+
+        labelSelection = labelSelection.merge(labelSelectionEnter);
 
         let fontSizeInPx: string = PixelConverter.fromPoint(labelSettings.fontSize);
         let fontFamily: string = labelSettings.fontFamily ? labelSettings.fontFamily : dataLabelUtils.LabelTextProperties.fontFamily;
 
         labelSelection
-        .attr("transform", (p: VisualDataPoint) => {
-            return svg.translate(p.labelCoordinates.x, p.labelCoordinates.y);
-        });
+            .attr("transform", (p: VisualDataPoint) => {
+                return svg.translate(p.labelCoordinates.x, p.labelCoordinates.y);
+            });
 
         labelSelection
             .style(
@@ -294,10 +300,6 @@ export class RenderVisual {
                 "pointer-events", "none"
             )
             .text((p: VisualDataPoint) => dataLabelFormatter.format(p.percentValue));
-
-        labelSelection
-            .exit()
-            .remove();
     }
 
     private static filterData(dataPoints: VisualDataPoint[], settings: categoryLabelsSettings): VisualDataPoint[] {
@@ -334,8 +336,8 @@ export class RenderVisual {
     public static renderTooltip(selection: d3Update<any>, tooltipServiceWrapper: ITooltipServiceWrapper): void {
         tooltipServiceWrapper.addTooltip(
             selection,
-            (tooltipEvent: TooltipEventArgs<VisualDataPoint>) => {
-                return (<VisualDataPoint>tooltipEvent.data).tooltips;
+            (tooltipEvent: VisualDataPoint) => {
+                return (tooltipEvent).tooltips;
             },
             null,
             true);
@@ -541,8 +543,6 @@ export class RenderVisual {
                     }
                 });
         }
-
-        const leftTitleSpace: number = 120;
 
         let textProperties: TextProperties = {
             fontFamily,
