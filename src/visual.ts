@@ -373,17 +373,17 @@ export class Visual implements IVisual {
         if (typeof (values.some(x => x && (<any>x).getMonth === 'function'))) {
             if (metadata.cols.category) {
                 formatter = valueFormatter.create({
-                    format: valueFormatter.getFormatStringByColumn(metadata.cols.category, true) || metadata.cols.category.format,
+                    format: valueFormatter.getFormatStringByColumn(<any>metadata.cols.category, true) || metadata.cols.category.format,
                     cultureSelector: this.host.locale
                 });
             } else if (metadata.groupingColumn) {
                 formatter = valueFormatter.create({
-                    format: valueFormatter.getFormatStringByColumn(metadata.groupingColumn, true) || metadata.groupingColumn.format,
+                    format: valueFormatter.getFormatStringByColumn(<any>metadata.groupingColumn, true) || metadata.groupingColumn.format,
                     cultureSelector: this.host.locale
                 });
             }
         } else {
-            let yAxisFormatString: string = valueFormatter.getFormatStringByColumn(metadata.cols.category) || valueFormatter.getFormatStringByColumn(metadata.groupingColumn);
+            let yAxisFormatString: string = valueFormatter.getFormatStringByColumn(<any>metadata.cols.category) || valueFormatter.getFormatStringByColumn(<any>metadata.groupingColumn);
 
             formatter = valueFormatter.create({ format: yAxisFormatString });
         }
@@ -944,6 +944,7 @@ export class Visual implements IVisual {
         if (!this.optionsAreValid(options)) {
             return;
         }
+        debugger;
 
         const dataView = options && options.dataViews && options.dataViews[0];
 
@@ -1214,7 +1215,7 @@ export class Visual implements IVisual {
         );
 
         let chartWidth: number = (<Element>this.xAxisSvgGroup.node()).getBoundingClientRect().width -
-                                    (<Element>this.xAxisSvgGroup.selectAll("text")[0][0]).getBoundingClientRect().width;
+                                    (<Element>this.xAxisSvgGroup.selectAll("text").node()).getBoundingClientRect().width;
 
         visualUtils.calculateLabelCoordinates(
             this.data,
@@ -1335,8 +1336,8 @@ export class Visual implements IVisual {
     }
 
     private calculateOffsets(xAxisSvgGroup: d3Selection<SVGElement>, yAxisSvgGroup: d3Selection<SVGElement>) {
-        let xtickText: d3Group<any> = xAxisSvgGroup.selectAll("text")[0];
-        let ytickText: d3Group<any> = yAxisSvgGroup.selectAll("text")[0];
+        let xtickText: d3Group<any> = xAxisSvgGroup.selectAll("text");
+        let ytickText: d3Group<any> = yAxisSvgGroup.selectAll("text");
 
         let showYAxisTitle: boolean = this.settings.categoryAxis.show && this.settings.categoryAxis.showTitle;
         let showXAxisTitle: boolean = this.settings.valueAxis.show && this.settings.valueAxis.showTitle;

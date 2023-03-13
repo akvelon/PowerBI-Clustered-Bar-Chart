@@ -1886,5 +1886,6 @@
     "supportsHighlight": true,
     "drilldown": {
         "roles": ["Axis"]
-    }
+    },
+    "privileges": []
 }

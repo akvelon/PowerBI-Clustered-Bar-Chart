@@ -532,7 +532,7 @@ export class RenderVisual {
                 })
                 .call((text: d3Selection<any>) => {
                     for (let j = 0; j < uniqueColumns.length; ++j) { 
-                        const textSelectionX: d3Selection<any> = d3.select(text[0][j]);
+                        const textSelectionX: d3Selection<any> = d3.select(text.nodes()[j]);
                         let x = leftSpace + j * chartSize.width + chartSize.width / 2 + this.gapBetweenCharts * j;
 
                         textSelectionX.attr(
@@ -588,7 +588,7 @@ export class RenderVisual {
             })
             .call((text: d3Selection<any>) => {
                 for (let i = 0; i < uniqueRows.length; ++i) { 
-                    const textSelectionX: d3Selection<any> = d3.select(text[0][i]);
+                    const textSelectionX: d3Selection<any> = d3.select(text.nodes()[i]);
                     let y = 0;
 
                     if (settings.layoutMode === LayoutMode.Flow) {
@@ -620,7 +620,7 @@ export class RenderVisual {
         let x = axes.x.scale(xValue);
         let y = axes.y.scale(axes.y.dataDomain[0]);
 
-        if (line[0][0]) {
+        if (line.node()) {
             element.selectAll("line").remove();
         } 
 
@@ -678,7 +678,7 @@ export class RenderVisual {
 
         let label: d3Selection<any> = element.select(".const-label");
 
-        if (label[0][0]) {
+        if (label.node()) {
             element.selectAll("text").remove();
         }
 

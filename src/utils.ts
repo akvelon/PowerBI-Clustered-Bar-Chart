@@ -67,7 +67,7 @@ export function calculateBarCoordianates(dataPoints: VisualDataPoint[],
             height = start != null && start > point.category || dataPointThickness < 0 ? 0 : dataPointThickness / clustersCount;
             height = end != null && end <= point.category ? 0 : height;
         } else {
-            height = axes.y.scale.rangeBand() / clustersCount;
+            height = axes.y.scale.range() / clustersCount;
         }
 
         if (categoryAxisIsContinuous){

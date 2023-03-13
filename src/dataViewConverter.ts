@@ -639,7 +639,7 @@ export class DataViewConverter<T> {
 
     private static getSeriesValues(dataView: DataView): PrimitiveValue[] | undefined {
         return dataView && dataView.categorical && dataView.categorical.values
-            && dataView.categorical.values.map(x => converterHelper.getSeriesName(x.source));
+            && dataView.categorical.values.map(x => converterHelper.converterHelper.getSeriesName(x.source));
     }
 
     private static getFormattedValue(column: DataViewMetadataColumn, value: any): string | undefined {

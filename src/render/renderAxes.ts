@@ -61,7 +61,7 @@ export class RenderAxes {
             xAxisPrecision = xAxisPrecision.toString();
         }
 
-        let xAxisFormatString: string = valueFormatter.getFormatStringByColumn(metadata.cols.value);
+        let xAxisFormatString: string = valueFormatter.getFormatStringByColumn(<any>metadata.cols.value);
 
         const skipValueRange: boolean = isSmallMultiple && settings.valueAxis.rangeType !== AxisRangeType.Custom,
             startValue: number = skipValueRange ? null : settings.valueAxis.start,
@@ -94,7 +94,7 @@ export class RenderAxes {
 
         // create Y axis
         let yAxisProperties: axisInterfaces.IAxisProperties;
-        let yAxisFormatString: string = valueFormatter.getFormatStringByColumn(metadata.cols.category) || valueFormatter.getFormatStringByColumn(metadata.groupingColumn);
+        let yAxisFormatString: string = valueFormatter.getFormatStringByColumn(<any>metadata.cols.category) || valueFormatter.getFormatStringByColumn(<any>metadata.groupingColumn);
 
         const categoryType: valueType.ValueType = axis.getCategoryValueType(metadata.cols.category);
         let isOrdinal: boolean = axis.isOrdinal(categoryType);
@@ -107,12 +107,12 @@ export class RenderAxes {
 
         if (metadata.cols.category) {
             dateColumnFormatter = valueFormatter.create({
-                format: valueFormatter.getFormatStringByColumn(metadata.cols.category, true) || metadata.cols.category.format,
+                format: valueFormatter.getFormatStringByColumn(<any>metadata.cols.category, true) || metadata.cols.category.format,
                 cultureSelector: host.locale
             });
         } else if (metadata.groupingColumn) {
             dateColumnFormatter = valueFormatter.create({
-                format: valueFormatter.getFormatStringByColumn(metadata.groupingColumn, true) || metadata.groupingColumn.format,
+                format: valueFormatter.getFormatStringByColumn(<any>metadata.groupingColumn, true) || metadata.groupingColumn.format,
                 cultureSelector: host.locale
             });
         }
@@ -341,7 +341,7 @@ export class RenderAxes {
             .style( "text-anchor", "middle" )
             .text(d => d)
             .call((text: d3Selection<any>) => {
-                const textSelectionX: d3Selection<any> = select(text[0][0]);
+                const textSelectionX: d3Selection<any> = select(text.nodes()[0]);
 
                 textSelectionX.attr(
                     "transform", svg.translate(
@@ -372,7 +372,7 @@ export class RenderAxes {
                     "font-family", xAxisFontFamily
                 );
 
-                const textSelectionY: d3Selection<any> = select(text[0][1]);
+                const textSelectionY: d3Selection<any> = select(text.nodes()[1]);
 
                 textSelectionY.attr(
                     "transform", showY1OnRight ? RenderAxes.YAxisLabelTransformRotate : RenderAxes.YAxisLabelTransformRotate,
