@@ -685,15 +685,17 @@ export class Visual implements IVisual {
                         "transform", svg.translate(marginLeft + (yHasRightPosition ? 0 : yAxisSize), 0)
                     );
 
-                const barSelect = barGroup
+                let barSelect = barGroup
                     .selectAll(Selectors.BarSelect.selectorName)
                     .data(dataPoints);
-
-                barSelect.enter().append("rect")
-                    .attr("class", Selectors.BarSelect.className);
-
+                    
                 barSelect.exit()
                     .remove();
+
+                const barSelectEnter = barSelect.enter().append("rect")
+                    .attr("class", Selectors.BarSelect.className);
+
+                barSelect = barSelect.merge(barSelectEnter)
                 
                 barSelect
                     .attr(
