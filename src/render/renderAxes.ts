@@ -426,14 +426,12 @@ export class RenderAxes {
     public static calculateValueDomain(allDatapoint: VisualDataPoint[], 
         settings: VisualSettings, 
         isSmallMultiple: boolean = false): any[] { 
-        let minValue: number = min(allDatapoint.filter(x => x.value < 0), d => <number>d.shiftValue);
-        let maxValue: number = max(allDatapoint.filter(x => x.value > 0), d => <number>d.value + d.shiftValue);
+
+        let minValue: number = min(allDatapoint, d => <number>d.value);
+        let maxValue: number = max(allDatapoint, d => <number>d.value);
 
         minValue = minValue < 0 ? minValue : 0;
         maxValue = maxValue > 0 ? maxValue : 0;
-
-        minValue = minValue < -1 ? -1 : minValue;
-        maxValue = maxValue > 1 ? 1 : maxValue;
 
         let dataDomainMinX: number = minValue;
         let dataDomainMaxX: number = maxValue;
@@ -441,8 +439,8 @@ export class RenderAxes {
         const constantLineValue: number = settings.constantLine.value;
 
         if (constantLineValue || constantLineValue === 0) {
-        dataDomainMinX = dataDomainMinX > constantLineValue ? constantLineValue : dataDomainMinX;
-        dataDomainMaxX = dataDomainMaxX < constantLineValue ? constantLineValue : dataDomainMaxX;
+            dataDomainMinX = dataDomainMinX > constantLineValue ? constantLineValue : dataDomainMinX;
+            dataDomainMaxX = dataDomainMaxX < constantLineValue ? constantLineValue : dataDomainMaxX;
         }
 
         const skipStartEnd: boolean = isSmallMultiple && settings.valueAxis.rangeType !== AxisRangeType.Custom;
@@ -451,15 +449,15 @@ export class RenderAxes {
         const end = skipStartEnd ? null : settings.valueAxis.end;
 
         if (start != null){
-        dataDomainMinX = start;
+            dataDomainMinX = start;
         }
 
         if ( settings.valueAxis.axisScale === 'log' && dataDomainMinX === 0 ){
-        dataDomainMinX = .001;
+            dataDomainMinX = 1;
         }
 
-        return [dataDomainMinX, end != null ? end : dataDomainMaxX];
-        }
+        return [dataDomainMinX, end != null ? end : dataDomainMaxX]
+    }
 
     private static Blank: string = "(Blank)";
 
