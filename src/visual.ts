@@ -28,7 +28,7 @@ import { RenderAxes } from "./render/renderAxes";
 import { axis } from "powerbi-visuals-utils-chartutils";
 import { valueType } from "powerbi-visuals-utils-typeutils";
 
-import { textMeasurementService as TextMeasurementService, interfaces, valueFormatter as ValueFormatter, textMeasurementService, valueFormatter} from "powerbi-visuals-utils-formattingutils";
+import { interfaces, valueFormatter as ValueFormatter, textMeasurementService, valueFormatter} from "powerbi-visuals-utils-formattingutils";
 import TextProperties = interfaces.TextProperties;
 import IValueFormatter = ValueFormatter.IValueFormatter;
 
@@ -71,15 +71,15 @@ import { pixelConverter as PixelConverter} from "powerbi-visuals-utils-typeutils
 import { LassoSelectionForSmallMultiple } from "./lassoSelectionUtilForSmallMultiple";
 
 
-module Selectors {
-    export const MainSvg = CssConstants.createClassAndSelector("bar-chart-svg");
-    export const VisualSvg = CssConstants.createClassAndSelector("bar-chart-visual");
-    export const BarSelect = CssConstants.createClassAndSelector("bar");
-    export const BarGroupSelect = CssConstants.createClassAndSelector("bar-group");
-    export const AxisGraphicsContext = CssConstants.createClassAndSelector("axisGraphicsContext");
-    export const AxisLabelSelector = CssConstants.createClassAndSelector("axisLabel");
-    export const LabelGraphicsContext = CssConstants.createClassAndSelector("labelGraphicsContext");
-    export const LabelBackgroundContext = CssConstants.createClassAndSelector("labelBackgroundContext");
+class Selectors {
+    public static MainSvg = CssConstants.createClassAndSelector("bar-chart-svg");
+    public static VisualSvg = CssConstants.createClassAndSelector("bar-chart-visual");
+    public static BarSelect = CssConstants.createClassAndSelector("bar");
+    public static BarGroupSelect = CssConstants.createClassAndSelector("bar-group");
+    public static AxisGraphicsContext = CssConstants.createClassAndSelector("axisGraphicsContext");
+    public static AxisLabelSelector = CssConstants.createClassAndSelector("axisLabel");
+    public static LabelGraphicsContext = CssConstants.createClassAndSelector("labelGraphicsContext");
+    public static LabelBackgroundContext = CssConstants.createClassAndSelector("labelBackgroundContext");
 }
 
 export class Visual implements IVisual {
@@ -187,11 +187,7 @@ export class Visual implements IVisual {
 
     saveSelection(): void {
         const selected = this.mainElement.selectAll<any, LegendDataPoint>(`.legendItem, ${Selectors.BarSelect.selectorName}`)
-            .filter(d => d.selected)
-            .each(d => {
-                // saving prototype value if no own value (needed for legend)
-                d.identity = d.identity;
-            });
+            .filter(d => d.selected);
         
         const data: any[] = selected.data();
         
@@ -289,12 +285,12 @@ export class Visual implements IVisual {
             return 0;
         }
 
-        let textProperties: TextProperties = {
+        const textProperties: TextProperties = {
             fontFamily: settings.fontFamily,
             fontSize: PixelConverter.toString(settings.fontSize)
         };
 
-        let height: number = textMeasurementService.measureSvgTextHeight(textProperties),
+        const height: number = textMeasurementService.measureSvgTextHeight(textProperties),
             additionalSpace: number = settings.layoutMode === LayoutMode.Flow ? 15 : 0;
 
         return height + additionalSpace;
@@ -315,27 +311,27 @@ export class Visual implements IVisual {
         const scrollHeight: number = 23,
             scrollWidth: number = 20,
             gapBetweenCharts: number = 10;
-        let minHeight: number = settings.minUnitHeight,
+        const minHeight: number = settings.minUnitHeight,
             minWidth: number = settings.minUnitWidth;
 
         let chartHeight: number = 0;
         let chartWidth: number = 0;
 
         if(settings.layoutMode === LayoutMode.Matrix) {
-            let clientHeight: number = viewport.height - topSpace - scrollHeight - legendSize.height;
-            let clientWidth: number = viewport.width - leftSpace - scrollWidth - legendSize.width;
+            const clientHeight: number = viewport.height - topSpace - scrollHeight - legendSize.height;
+            const clientWidth: number = viewport.width - leftSpace - scrollWidth - legendSize.width;
 
             chartHeight = (clientHeight - gapBetweenCharts * rows) / rows;
             chartWidth = (clientWidth - gapBetweenCharts * columns) / columns;
         } else {
-            let clientHeight: number = viewport.height - scrollHeight - legendSize.height;
-            let clientWidth: number = viewport.width - leftSpace - scrollWidth - legendSize.width;;
+            const clientHeight: number = viewport.height - scrollHeight - legendSize.height;
+            const clientWidth: number = viewport.width - leftSpace - scrollWidth - legendSize.width;
 
             chartHeight = (clientHeight - gapBetweenCharts * rows - topSpace * rows ) / rows;
             chartWidth = (clientWidth - gapBetweenCharts * (columns)) / columns;
         }
 
-        let isVerticalScrollBarNeeded: boolean = chartHeight < minHeight - scrollWidth / rows,
+        const isVerticalScrollBarNeeded: boolean = chartHeight < minHeight - scrollWidth / rows,
             isHorizontalScrollBarNeeded: boolean = chartWidth < minWidth - scrollHeight / columns;
 
         if (!isVerticalScrollBarNeeded) {
@@ -370,7 +366,7 @@ export class Visual implements IVisual {
     public calculateYAxisSize(values: PrimitiveValue[], settings: VisualSettings, metadata: VisualMeasureMetadata): number {
         let formatter: IValueFormatter;
 
-        if (typeof (values.some(x => x && (<any>x).getMonth === 'function'))) {
+        if (values.some(x => x && typeof (<any>x).getMonth === 'function')) {
             if (metadata.cols.category) {
                 formatter = valueFormatter.create({
                     format: valueFormatter.getFormatStringByColumn(<any>metadata.cols.category, true) || metadata.cols.category.format,
@@ -383,24 +379,24 @@ export class Visual implements IVisual {
                 });
             }
         } else {
-            let yAxisFormatString: string = valueFormatter.getFormatStringByColumn(<any>metadata.cols.category) || valueFormatter.getFormatStringByColumn(<any>metadata.groupingColumn);
+            const yAxisFormatString: string = valueFormatter.getFormatStringByColumn(<any>metadata.cols.category) || valueFormatter.getFormatStringByColumn(<any>metadata.groupingColumn);
 
             formatter = valueFormatter.create({ format: yAxisFormatString });
         }
 
-        let fontSize: string = PixelConverter.toString(settings.categoryAxis.fontSize);
-        let fontFamily: string = settings.categoryAxis.fontFamily;
+        const fontSize: string = PixelConverter.toString(settings.categoryAxis.fontSize);
+        const fontFamily: string = settings.categoryAxis.fontFamily;
 
         let maxWidth: number = 0;
 
         values.forEach(value => {
-            let textProperties: TextProperties = {
+            const textProperties: TextProperties = {
                 text: formatter.format(value),
                 fontFamily: fontFamily,
                 fontSize: fontSize
             };
 
-            let width: number = textMeasurementService.measureSvgTextWidth(textProperties);
+            const width: number = textMeasurementService.measureSvgTextWidth(textProperties);
             maxWidth = width > maxWidth ? width : maxWidth;
         });
 
@@ -409,35 +405,36 @@ export class Visual implements IVisual {
 
     public calculateXAxisSize(settings: VisualSettings): number {      
 
-        let fontSize: string = PixelConverter.toString(settings.valueAxis.fontSize);
-        let fontFamily: string = settings.valueAxis.fontFamily;
+        const fontSize: string = PixelConverter.toString(settings.valueAxis.fontSize);
+        const fontFamily: string = settings.valueAxis.fontFamily;
 
-        let textProperties: TextProperties = {
+        const textProperties: TextProperties = {
             fontFamily: fontFamily,
             fontSize: fontSize
         };
 
-        let height: number = textMeasurementService.measureSvgTextHeight(textProperties);
+        const height: number = textMeasurementService.measureSvgTextHeight(textProperties);
 
         return height + 8;
     }
 
+    // eslint-disable-next-line max-lines-per-function
     public smallMultipleProcess(viewport: IViewport) {
 
-        let uniqueColumns: PrimitiveValue[] = this.allDataPoints.map(x => x.columnBy).filter((v, i, a) => a.indexOf(v) === i);
-        let uniqueRows: PrimitiveValue[] = this.allDataPoints.map(x => x.rowBy).filter((v, i, a) => a.indexOf(v) === i);
-        let uniqueCategories: PrimitiveValue[] = this.allDataPoints.map(x => x.category).filter((v, i, a) => a.indexOf(v) === i);
+        const uniqueColumns: PrimitiveValue[] = this.allDataPoints.map(x => x.columnBy).filter((v, i, a) => a.indexOf(v) === i);
+        const uniqueRows: PrimitiveValue[] = this.allDataPoints.map(x => x.rowBy).filter((v, i, a) => a.indexOf(v) === i);
+        const uniqueCategories: PrimitiveValue[] = this.allDataPoints.map(x => x.category).filter((v, i, a) => a.indexOf(v) === i);
         
-        let leftSpace: number = uniqueRows && uniqueRows.length === 1 && uniqueRows[0] === null ? 0 : this.calculateLabelsSize(this.settings.smallMultiple);
-        let topSpace: number = this.calculateTopSpace(this.settings.smallMultiple);            
+        const leftSpace: number = uniqueRows && uniqueRows.length === 1 && uniqueRows[0] === null ? 0 : this.calculateLabelsSize(this.settings.smallMultiple);
+        const topSpace: number = this.calculateTopSpace(this.settings.smallMultiple);            
 
-        let hasHighlight = this.allDataPoints.filter(x => x.highlight).length > 0;
+        const hasHighlight = this.allDataPoints.filter(x => x.highlight).length > 0;
 
-        let marginLeft: number = 10;
+        const marginLeft: number = 10;
         let yAxisSize: number = this.calculateYAxisSize(uniqueCategories, this.settings, this.metadata);
-        let xAxisSize: number = this.calculateXAxisSize(this.settings);
+        const xAxisSize: number = this.calculateXAxisSize(this.settings);
 
-        let gapBetweenCharts: number = 10;
+        const gapBetweenCharts: number = 10;
 
         this.prepareMainDiv(this.mainElement);
         this.mainElement.select('.scrollbar-track').remove();      
@@ -469,16 +466,16 @@ export class Visual implements IVisual {
             };
         }
 
-        let layoutMode: LayoutMode = this.settings.smallMultiple.layoutMode;
-        let maxRowWidth: number = this.settings.smallMultiple.maxRowWidth;
+        const layoutMode: LayoutMode = this.settings.smallMultiple.layoutMode;
+        const maxRowWidth: number = this.settings.smallMultiple.maxRowWidth;
 
-        let rowsInFlow: number = uniqueColumns.length <= maxRowWidth ? 1 : (Math.floor(uniqueColumns.length / maxRowWidth) + (uniqueColumns.length % maxRowWidth > 0 ? 1 : 0));
+        const rowsInFlow: number = uniqueColumns.length <= maxRowWidth ? 1 : (Math.floor(uniqueColumns.length / maxRowWidth) + (uniqueColumns.length % maxRowWidth > 0 ? 1 : 0));
 
-        let columns: number = layoutMode === LayoutMode.Matrix ? uniqueColumns.length : Math.min(uniqueColumns.length, maxRowWidth);
-        let rows: number = layoutMode === LayoutMode.Matrix ? uniqueRows.length : rowsInFlow * uniqueRows.length;
+        const columns: number = layoutMode === LayoutMode.Matrix ? uniqueColumns.length : Math.min(uniqueColumns.length, maxRowWidth);
+        const rows: number = layoutMode === LayoutMode.Matrix ? uniqueRows.length : rowsInFlow * uniqueRows.length;
 
-        let chartSize: SmallMultipleSizeOptions = this.calculateChartSize(viewport, this.settings.smallMultiple, leftSpace, topSpace, rows, columns, legendSize);
-        let barsSectionSize: ISize = {
+        const chartSize: SmallMultipleSizeOptions = this.calculateChartSize(viewport, this.settings.smallMultiple, leftSpace, topSpace, rows, columns, legendSize);
+        const barsSectionSize: ISize = {
             height: chartSize.height - xAxisSize - gapBetweenCharts,
             width: chartSize.width - yAxisSize - gapBetweenCharts * 2
         }   
@@ -497,7 +494,7 @@ export class Visual implements IVisual {
                 "overflow-y", chartSize.isVerticalSliderNeeded ? "auto" : "hidden"
             );
         
-        let maxLabelWidth: number = (chartSize.width) / 100 * this.settings.categoryAxis.maximumSize; 
+        const maxLabelWidth: number = (chartSize.width) / 100 * this.settings.categoryAxis.maximumSize; 
         if (this.settings.categoryAxis.maximumSize) {
             if (yAxisSize > maxLabelWidth) {
                 barsSectionSize.width += yAxisSize;
@@ -516,7 +513,7 @@ export class Visual implements IVisual {
 
         const defaultXDomain: any[] = RenderAxes.calculateValueDomain(this.allDataPoints, this.settings, true);
         const defaultYDomain: any[] = RenderAxes.calculateCategoryDomain(this.allDataPoints, this.settings, this.metadata, true);
-        let barHeight: number = this.getBarHeight(this.allDataPoints, chartSize, this.allDataPoints.length);
+        const barHeight: number = this.getBarHeight(this.allDataPoints, chartSize, this.allDataPoints.length);
         const defaultAxes: IAxes = this.createSmallMultipleAxesByDomains(defaultYDomain, defaultXDomain, barsSectionSize, maxLabelWidth, barHeight);
 
         let xDomain: any[] = [],
@@ -555,7 +552,7 @@ export class Visual implements IVisual {
             svgWidth = leftSpace + columns * chartSize.width + gapBetweenCharts * (columns);
         }
 
-        let svgChart = this.mainDivElement
+        const svgChart = this.mainDivElement
                 .append("svg")
                 .classed("chart", true)
                 .style(
@@ -575,25 +572,25 @@ export class Visual implements IVisual {
                     leftMove = gapBetweenCharts / 2 + j * chartSize.width + gapBetweenCharts * j;
                     topMove = topSpace + i * chartSize.height + gapBetweenCharts * i;
                 } else {
-                    let xPosition: number = Math.floor(j % maxRowWidth);
-                    let yPosition: number = Math.floor(j / maxRowWidth) + i * rowsInFlow;
+                    const xPosition: number = Math.floor(j % maxRowWidth);
+                    const yPosition: number = Math.floor(j / maxRowWidth) + i * rowsInFlow;
 
                     leftMove = xPosition * chartSize.width + gapBetweenCharts * xPosition;
                     topMove = yPosition * chartSize.height + gapBetweenCharts * yPosition + topSpace * yPosition + gapBetweenCharts / 2;
                 }
 
-                let dataPoints: VisualDataPoint[] = this.allDataPoints.filter(x => x.rowBy === uniqueRows[i]).filter(x => x.columnBy === uniqueColumns[j]);
+                const dataPoints: VisualDataPoint[] = this.allDataPoints.filter(x => x.rowBy === uniqueRows[i]).filter(x => x.columnBy === uniqueColumns[j]);
 
-                let chart = svgChart
+                const chart = svgChart
                     .append("g")
                     .attr(
                         "transform", svg.translate(leftSpace + leftMove, topMove + topSpace)
                     );
 
-                let xAxisSvgGroup: d3Selection<SVGElement> = chart.append("g");
-                let yAxisSvgGroup: d3Selection<SVGElement> = chart.append("g");
+                const xAxisSvgGroup: d3Selection<SVGElement> = chart.append("g");
+                const yAxisSvgGroup: d3Selection<SVGElement> = chart.append("g");
 
-                let yHasRightPosition: boolean = this.settings.categoryAxis.show && this.settings.categoryAxis.position === "right";
+                const yHasRightPosition: boolean = this.settings.categoryAxis.show && this.settings.categoryAxis.position === "right";
 
                 xAxisSvgGroup.attr(
                     "transform",
@@ -609,7 +606,7 @@ export class Visual implements IVisual {
                         (yHasRightPosition ? barsSectionSize.width : yAxisSize),
                         0));                   
                 
-                let barHeight: number = this.getBarHeight(dataPoints, chartSize, dataPoints.length);
+                const barHeight: number = this.getBarHeight(dataPoints, chartSize, dataPoints.length);
 
                 if (yIsSeparate || xIsSeparate) {
                     if (!dataPoints || !dataPoints.length) {
@@ -635,13 +632,13 @@ export class Visual implements IVisual {
 
                 if (xIsCustom) {
                     let divider: number = 1;
-                    let xText = xAxisSvgGroup.selectAll("text")[0];
+                    const xText = xAxisSvgGroup.selectAll("text")[0];
 
-                    let axisWidth = (xText.parentNode  as SVGGraphicsElement).getBBox().width;
-                    let maxTextWidth = visualUtils.getLabelsMaxWidth(xText);
+                    const axisWidth = (xText.parentNode  as SVGGraphicsElement).getBBox().width;
+                    const maxTextWidth = visualUtils.getLabelsMaxWidth(xText);
 
                     for (let i = 0; i < xText.length; ++i) {
-                        let actualAllAxisTextWidth: number = maxTextWidth * xText.length / divider;
+                        const actualAllAxisTextWidth: number = maxTextWidth * xText.length / divider;
 
                         if (actualAllAxisTextWidth > axisWidth) {
                             divider += 1;
@@ -659,13 +656,13 @@ export class Visual implements IVisual {
 
                 if (yIsCustom) {
                     let divider: number = 1;
-                    let yText = yAxisSvgGroup.selectAll("text")[0];
+                    const yText = yAxisSvgGroup.selectAll("text")[0];
 
-                    let axisWidth = (yText.parentNode  as SVGGraphicsElement).getBBox().height;
-                    let maxTextWidth = visualUtils.getLabelsMaxHeight(yText);
+                    const axisWidth = (yText.parentNode  as SVGGraphicsElement).getBBox().height;
+                    const maxTextWidth = visualUtils.getLabelsMaxHeight(yText);
 
                     for (let i = 0; i < yText.length; ++i) {
-                        let actualAllAxisTextWidth: number = maxTextWidth * yText.length / divider;
+                        const actualAllAxisTextWidth: number = maxTextWidth * yText.length / divider;
 
                         if (actualAllAxisTextWidth > axisWidth) {
                             divider += 1;
@@ -681,7 +678,7 @@ export class Visual implements IVisual {
                     }
                 }
 
-                let barGroup = chart
+                const barGroup = chart
                     .append("g")
                     .classed("bar-group", true)
                     .attr(
@@ -723,7 +720,7 @@ export class Visual implements IVisual {
                         "fill", d => d.color
                     );
 
-                let interactivityService = this.interactivityService,
+                const interactivityService = this.interactivityService,
                 hasSelection: boolean = interactivityService.hasSelection();
                 interactivityService.applySelectionStateToData(dataPoints);
     
@@ -759,7 +756,7 @@ export class Visual implements IVisual {
                     }
                 )
                 .style(
-                    "stroke-opacity", p => {
+                    "stroke-opacity", () => {
                         return hasSelection || hasHighlight ? 1 : 0
                     }
                 )
@@ -775,7 +772,7 @@ export class Visual implements IVisual {
                     dataPoints
                 );
 
-                let labelGraphicsContext = barGroup
+                const labelGraphicsContext = barGroup
                         .append("g")
                         .classed(Selectors.LabelGraphicsContext.className, true);
 
@@ -787,7 +784,7 @@ export class Visual implements IVisual {
                     dataPoints
                 );
 
-                let labelBackgroundContext = barGroup
+                const labelBackgroundContext = barGroup
                     .append("g")
                     .classed(Selectors.LabelBackgroundContext.className, true);
 
@@ -812,7 +809,7 @@ export class Visual implements IVisual {
                     }, this.settings.smallMultiple);
                 }
 
-                let yHeight: number = (<Element>xAxisSvgGroup.selectAll("line").node()).getBoundingClientRect().height;
+                const yHeight: number = (<Element>xAxisSvgGroup.selectAll("line").node()).getBoundingClientRect().height;
                 if (axes.x.dataDomain[0] < this.settings.constantLine.value && this.settings.constantLine.value < axes.x.dataDomain[1]) {
                     RenderVisual.renderConstantLine(this.settings.constantLine, barGroup, axes, yHeight);
                 }                    
@@ -853,7 +850,7 @@ export class Visual implements IVisual {
         if (this.interactivityService) {
             this.interactivityService.applySelectionStateToData(this.allDataPoints);
 
-            let behaviorOptions: WebBehaviorOptions = {
+            const behaviorOptions: WebBehaviorOptions = {
                 bars: this.mainElement.selectAll(Selectors.BarSelect.selectorName),
                 clearCatcher: d3.select( document.createElement('div') ),
                 interactivityService: this.interactivityService,
@@ -888,7 +885,7 @@ export class Visual implements IVisual {
 
         this.scrollBar.updateData(this.getScrollbarState(), options.type);
 
-        let visibleDataPoints: VisualDataPoint[] = this.scrollBar.getVisibleDataPoints();
+        const visibleDataPoints: VisualDataPoint[] = this.scrollBar.getVisibleDataPoints();
 
         let axes: IAxes = this.createAxes(visibleDataPoints);
 
@@ -925,17 +922,17 @@ export class Visual implements IVisual {
         axes = this.createAxes(visibleDataPoints);
         this.data.axes = axes;
 
-        this.renderAxes(this.maxYLabelsWidth);
+        this.renderAxes();
         this.finalRendering();
 
         this.scrollBar.update();
 
-        let bars = this.barGroup.selectAll(Selectors.BarSelect.selectorName).data(visibleDataPoints);
+        const bars = this.barGroup.selectAll(Selectors.BarSelect.selectorName).data(visibleDataPoints);
         this.LassoSelectionForSmallMultiple.disable();
         this.lassoSelection.update(bars);
 
         if ( this.settings.constantLine.show && this.settings.constantLine.value ){
-            let yHeight: number = (<Element>this.xAxisSvgGroup.selectAll("line").node()).getBoundingClientRect().height;
+            const yHeight: number = (<Element>this.xAxisSvgGroup.selectAll("line").node()).getBoundingClientRect().height;
             RenderVisual.renderConstantLine(this.settings.constantLine, this.barGroup, axes, yHeight);
         }
     }
@@ -1023,7 +1020,7 @@ export class Visual implements IVisual {
     }
 
     private buildDataPointsByCategoriesArray(dataPoints: VisualDataPoint[]): CategoryDataPoints[] {
-        let dataPointsByCategories: CategoryDataPoints[] = [];
+        const dataPointsByCategories: CategoryDataPoints[] = [];
         let categoryIndex: number = 0;
         let categoryName: string = '';
         let previousCategoryName: string = '';
@@ -1041,7 +1038,7 @@ export class Visual implements IVisual {
             }
 
             if (!dataPointsByCategories[categoryIndex]) {
-                let category: CategoryDataPoints = {
+                const category: CategoryDataPoints = {
                     categoryName,
                     dataPoints: []
                 };
@@ -1056,7 +1053,7 @@ export class Visual implements IVisual {
         const visibleDataPoints: VisualDataPoint[] = this.scrollBar.getVisibleDataPoints();
 
         let axes: IAxes = this.createAxes(visibleDataPoints);
-        let legendData = legendUtils.getSuitableLegendData(this.dataView, this.host, this.settings.legend);
+        const legendData = legendUtils.getSuitableLegendData(this.dataView, this.host, this.settings.legend);
         this.data = {
             dataPoints: visibleDataPoints,
             size: this.visualSize,
@@ -1104,8 +1101,8 @@ export class Visual implements IVisual {
     }
 
     private createAxes(dataPoints, isSmallMultiple = false): IAxes {
-        let axesDomains: AxesDomains = RenderAxes.calculateAxesDomains(this.allDataPoints, dataPoints, this.settings, this.metadata, isSmallMultiple);
-        let axes: IAxes = RenderAxes.createD3Axes(
+        const axesDomains: AxesDomains = RenderAxes.calculateAxesDomains(this.allDataPoints, dataPoints, this.settings, this.metadata, isSmallMultiple);
+        const axes: IAxes = RenderAxes.createD3Axes(
             axesDomains,
             this.visualSize,
             this.metadata,
@@ -1137,7 +1134,7 @@ export class Visual implements IVisual {
             this.settings);
     }
 
-    private renderAxes(maxYLabelsWidth = null): void { 
+    private renderAxes(): void { 
 
         visualUtils.calculateBarCoordianatesByData(this.data, this.settings, this.BarHeight);
 
@@ -1147,13 +1144,12 @@ export class Visual implements IVisual {
             this.settings,
             this.xAxisSvgGroup,
             this.yAxisSvgGroup,
-            this.data.axes,
-            maxYLabelsWidth
+            this.data.axes
         );
     }
 
     private renderSmallMultipleAxes(dataPoints: VisualDataPoint[], axes: IAxes, xAxisSvgGroup: d3Selection<SVGElement>, yAxisSvgGroup: d3Selection<SVGElement>, barHeight: number): void {
-        let legendDataPointsCount: number = this.legendProperties 
+        const legendDataPointsCount: number = this.legendProperties 
                                                     && this.legendProperties.data 
                                                     && this.legendProperties.data.dataPoints ? this.legendProperties.data.dataPoints.length : 1;
 
@@ -1168,12 +1164,12 @@ export class Visual implements IVisual {
     }
 
     private createSmallMultipleAxesByDomains(categoryDomain: any[], valueDomain: any[], visualSize: ISize, maxYAxisLabelWidth: number, barHeight: number = null): IAxes {
-        let axesDomains: AxesDomains = {
+        const axesDomains: AxesDomains = {
             xAxisDomain: valueDomain,
             yAxisDomain: categoryDomain
         };
 
-        let axes: IAxes = RenderAxes.createD3Axes(
+        const axes: IAxes = RenderAxes.createD3Axes(
             axesDomains,
             visualSize,
             this.metadata,
@@ -1213,7 +1209,7 @@ export class Visual implements IVisual {
             this.hasHighlight
         );
 
-        let chartWidth: number = (<Element>this.xAxisSvgGroup.node()).getBoundingClientRect().width -
+        const chartWidth: number = (<Element>this.xAxisSvgGroup.node()).getBoundingClientRect().width -
                                     (<Element>this.xAxisSvgGroup.selectAll("text").node()).getBoundingClientRect().width;
 
         visualUtils.calculateLabelCoordinates(
@@ -1314,7 +1310,7 @@ export class Visual implements IVisual {
         }
 
         if (yAxis.showTitle && yAxis.axisTitle.length === 0) {
-            let categories = dataView.categorical.categories;
+            const categories = dataView.categorical.categories;
             yAxis.axisTitle = categories ? categories[0].source.displayName : dataView.categorical.values.source.displayName;
         }
         if (!yAxis.showTitle) {
@@ -1335,11 +1331,11 @@ export class Visual implements IVisual {
     }
 
     private calculateOffsets(xAxisSvgGroup: d3Selection<SVGElement>, yAxisSvgGroup: d3Selection<SVGElement>) {
-        let xtickText: d3Group<any> = xAxisSvgGroup.selectAll("text");
-        let ytickText: d3Group<any> = yAxisSvgGroup.selectAll("text");
+        const xtickText: d3Group<any> = xAxisSvgGroup.selectAll("text");
+        const ytickText: d3Group<any> = yAxisSvgGroup.selectAll("text");
 
-        let showYAxisTitle: boolean = this.settings.categoryAxis.show && this.settings.categoryAxis.showTitle;
-        let showXAxisTitle: boolean = this.settings.valueAxis.show && this.settings.valueAxis.showTitle;
+        const showYAxisTitle: boolean = this.settings.categoryAxis.show && this.settings.categoryAxis.showTitle;
+        const showXAxisTitle: boolean = this.settings.valueAxis.show && this.settings.valueAxis.showTitle;
 
         this.yTickOffset = visualUtils.getLabelsMaxWidth(ytickText) + (showYAxisTitle ? 
                                                                         PixelConverter.fromPointToPixel(this.settings.categoryAxis.titleFontSize) : 0);
@@ -1374,9 +1370,9 @@ export class Visual implements IVisual {
     }
 
     private calculateVisualMargin(): void {
-        let yHasRightPosition: boolean = this.settings.categoryAxis.show && this.settings.categoryAxis.position === "right";
-        let extendedLeftMargin: boolean = yHasRightPosition || !this.settings.categoryAxis.show;
-        let extendedRightMargin: boolean = !yHasRightPosition || !this.settings.categoryAxis.show;
+        const yHasRightPosition: boolean = this.settings.categoryAxis.show && this.settings.categoryAxis.position === "right";
+        const extendedLeftMargin: boolean = yHasRightPosition || !this.settings.categoryAxis.show;
+        const extendedRightMargin: boolean = !yHasRightPosition || !this.settings.categoryAxis.show;
 
         // Set up margins for our visual
         this.visualMargin = { top: 5, bottom: 5, left: extendedLeftMargin ? 15 : 5 , right: extendedRightMargin ? 15 : 5 };
@@ -1387,9 +1383,6 @@ export class Visual implements IVisual {
     }
 
     private calculateVisualSize(legendSize: LegendSize, xAxisTitleThickness: number): void {
-        // Set up sizes for axes
-        const axesSize: IAxesSize = { xAxisHeight: 10, yAxisWidth: 15 };
-
         // Calculate the resulting size of visual
         const visualSize: ISize = {
             width: this.viewport.width
@@ -1474,10 +1467,10 @@ export class Visual implements IVisual {
      *
      */
     public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstance[] | VisualObjectInstanceEnumerationObject {
-        let instanceEnumeration: VisualObjectInstanceEnumeration = VisualSettings.enumerateObjectInstances(this.settings || VisualSettings.getDefault(), options);
+        const instanceEnumeration: VisualObjectInstanceEnumeration = VisualSettings.enumerateObjectInstances(this.settings || VisualSettings.getDefault(), options);
 
-        let instances: VisualObjectInstance[] = (instanceEnumeration as VisualObjectInstanceEnumerationObject).instances;
-        let instance: VisualObjectInstance = instances[0];
+        const instances: VisualObjectInstance[] = (instanceEnumeration as VisualObjectInstanceEnumerationObject).instances;
+        const instance: VisualObjectInstance = instances[0];
 
         if (instance.objectName === "legend" && !this.isLegendNeeded) {
             return null;

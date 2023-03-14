@@ -16,7 +16,7 @@ import { interactivityBaseService } from "powerbi-visuals-utils-interactivityuti
 import IInteractiveBehavior = interactivityBaseService.IInteractiveBehavior;
 import IInteractivityService = interactivityBaseService.IInteractivityService;
 
-import { ITooltipServiceWrapper, TooltipEventArgs } from "powerbi-visuals-utils-tooltiputils";
+import { ITooltipServiceWrapper } from "powerbi-visuals-utils-tooltiputils";
 
 import { textMeasurementService as TextMeasurementService, interfaces, valueFormatter as ValueFormatter} from "powerbi-visuals-utils-formattingutils";
 import TextProperties = interfaces.TextProperties;
@@ -36,15 +36,16 @@ import { DataLabelHelper } from "../utils/dataLabelHelper";
 import { createFormatter, getValueForFormatter } from "../utils/formattingUtils";
 
 
-module Selectors {
-    export const BarSelect = CssConstants.createClassAndSelector("bar");
-    export const BarGroupSelect = CssConstants.createClassAndSelector("bar-group"); 
-    export const AxisLabelSelector = CssConstants.createClassAndSelector("axisLabel");
+class Selectors {
+    public static BarSelect = CssConstants.createClassAndSelector("bar");
+    public static BarGroupSelect = CssConstants.createClassAndSelector("bar-group"); 
+    public static AxisLabelSelector = CssConstants.createClassAndSelector("axisLabel");
 }
 
 export class RenderVisual {
     private static Label: ClassAndSelector = createClassAndSelector("label");
 
+    // eslint-disable-next-line max-lines-per-function
     public static render(
         data: VisualData,
         settings: VisualSettings,
@@ -117,7 +118,7 @@ export class RenderVisual {
                 "fill", d => d.color
             );
 
-        let interactivityService = visualInteractivityService,
+        const interactivityService = visualInteractivityService,
             hasSelection: boolean = interactivityService.hasSelection();
 
             barSelect
@@ -156,7 +157,7 @@ export class RenderVisual {
         if (interactivityService) {
             interactivityService.applySelectionStateToData(data.dataPoints);
 
-            let behaviorOptions: WebBehaviorOptions = {
+            const behaviorOptions: WebBehaviorOptions = {
                 bars: barSelect,
                 clearCatcher: clearCatcher,
                 interactivityService: visualInteractivityService,
@@ -178,7 +179,7 @@ export class RenderVisual {
         dataLabelsBackgroundContext: d3Selection<any>,
         dataPoints?: VisualDataPoint[]): void {
 
-        let labelSettings: categoryLabelsSettings = settings.categoryLabels;
+        const labelSettings: categoryLabelsSettings = settings.categoryLabels;
 
         dataLabelsBackgroundContext.selectAll("*").remove();
 
@@ -186,7 +187,7 @@ export class RenderVisual {
             return;
         }
 
-        let dataPointsArray: VisualDataPoint[] = this.filterData(dataPoints || data.dataPoints, settings.categoryLabels),
+        const dataPointsArray: VisualDataPoint[] = this.filterData(dataPoints || data.dataPoints),
             backgroundSelection: d3Selection<VisualDataPoint> = dataLabelsBackgroundContext
                     .selectAll(RenderVisual.Label.selectorName)
                     .data(dataPointsArray);
@@ -247,7 +248,7 @@ export class RenderVisual {
         metadata: VisualMeasureMetadata,
         dataPoints?: VisualDataPoint[]): void {
 
-        let labelSettings: categoryLabelsSettings = settings.categoryLabels;
+        const labelSettings: categoryLabelsSettings = settings.categoryLabels;
 
         dataLabelsContext.selectAll("*").remove();
 
@@ -255,8 +256,8 @@ export class RenderVisual {
             return;
         }
 
-        let dataPointsArray: VisualDataPoint[] = this.filterData(dataPoints || data.dataPoints, settings.categoryLabels),
-            labelSelection: d3Update<VisualDataPoint> = dataLabelsContext
+        const dataPointsArray: VisualDataPoint[] = this.filterData(dataPoints || data.dataPoints);
+        let labelSelection: d3Update<VisualDataPoint> = dataLabelsContext
                     .selectAll(RenderVisual.Label.selectorName)
                     .data(dataPointsArray);
 
@@ -266,7 +267,7 @@ export class RenderVisual {
             .exit()
             .remove();
 
-        let dataLabelFormatter: IValueFormatter =
+        const dataLabelFormatter: IValueFormatter =
                 createFormatter(labelSettings.displayUnits,
                                                 labelSettings.precision,
                                                 metadata.cols.value,
@@ -278,8 +279,8 @@ export class RenderVisual {
 
         labelSelection = labelSelection.merge(labelSelectionEnter);
 
-        let fontSizeInPx: string = PixelConverter.fromPoint(labelSettings.fontSize);
-        let fontFamily: string = labelSettings.fontFamily ? labelSettings.fontFamily : dataLabelUtils.LabelTextProperties.fontFamily;
+        const fontSizeInPx: string = PixelConverter.fromPoint(labelSettings.fontSize);
+        const fontFamily: string = labelSettings.fontFamily ? labelSettings.fontFamily : dataLabelUtils.LabelTextProperties.fontFamily;
 
         labelSelection
             .attr("transform", (p: VisualDataPoint) => {
@@ -302,19 +303,19 @@ export class RenderVisual {
             .text((p: VisualDataPoint) => dataLabelFormatter.format(p.percentValue));
     }
 
-    private static filterData(dataPoints: VisualDataPoint[], settings: categoryLabelsSettings): VisualDataPoint[] {
-        let filteredDatapoints: VisualDataPoint[] = dataPoints.filter(x => x.labelCoordinates);
+    private static filterData(dataPoints: VisualDataPoint[]): VisualDataPoint[] {
+        const filteredDatapoints: VisualDataPoint[] = dataPoints.filter(x => x.labelCoordinates);
 
-        let validCoordinatesDataPoints: VisualDataPoint[] = dataPoints.filter(x => x.labelCoordinates);
+        const validCoordinatesDataPoints: VisualDataPoint[] = dataPoints.filter(x => x.labelCoordinates);
 
-        for (let index in validCoordinatesDataPoints) {
-            let dataPoint = validCoordinatesDataPoints[index];
-            let coords: Coordinates = dataPoint.labelCoordinates;
+        for (const index in validCoordinatesDataPoints) {
+            const dataPoint = validCoordinatesDataPoints[index];
+            const coords: Coordinates = dataPoint.labelCoordinates;
             let isIntersected: boolean = false;
 
-            for (let i in filteredDatapoints) {
-                let filteredDatapoint: VisualDataPoint = filteredDatapoints[i];
-                let filteredCoods: Coordinates = filteredDatapoint.labelCoordinates;
+            for (const i in filteredDatapoints) {
+                const filteredDatapoint: VisualDataPoint = filteredDatapoints[i];
+                const filteredCoods: Coordinates = filteredDatapoint.labelCoordinates;
 
                 if (coords.x < filteredCoods.x + filteredCoods.width + 8
                     && coords.x + coords.width > filteredCoods.x + 8
@@ -347,7 +348,7 @@ export class RenderVisual {
 
     public static renderSmallMultipleLines(options: SmallMultipleOptions, settings: smallMultipleSettings) {
 
-        let uniqueRows: PrimitiveValue[] = options.rows,
+        const uniqueRows: PrimitiveValue[] = options.rows,
             uniqueColumns: PrimitiveValue[] = options.columns,
             chartSize: ISize = options.chartSize,
             chartElement: d3Selection<any> = options.chartElement,
@@ -363,7 +364,7 @@ export class RenderVisual {
                 y = topSpace * i * rowsInFlow + i * chartSize.height * rowsInFlow + this.gapBetweenCharts * (i * rowsInFlow - 1);
             }
 
-            let line = chartElement.append("line")
+            const line = chartElement.append("line")
             .style(
                 "stroke", "#aaa",
             )
@@ -388,9 +389,9 @@ export class RenderVisual {
 
         if (settings.layoutMode === LayoutMode.Matrix) {
             for (let j = 1; j < uniqueColumns.length; ++j) { 
-                let x = leftSpace + j * chartSize.width + this.gapBetweenCharts * j;
+                const x = leftSpace + j * chartSize.width + this.gapBetweenCharts * j;
 
-                let line = chartElement
+                const line = chartElement
                 .append("line")
                 .style(
                     "stroke", "#aaa"
@@ -416,7 +417,7 @@ export class RenderVisual {
     }
 
     public static renderSmallMultipleTopTitle(options: SmallMultipleOptions, settings: smallMultipleSettings) {
-        let uniqueColumns: PrimitiveValue[] = options.columns,
+        const uniqueColumns: PrimitiveValue[] = options.columns,
             index: number = options.index,
             chartSize: ISize = options.chartSize,
             chartElement: d3Selection<any> = options.chartElement,
@@ -426,7 +427,7 @@ export class RenderVisual {
             fontSizeInPx: string = PixelConverter.fromPoint(settings.fontSize),
             fontFamily: string = settings.fontFamily;
 
-        let topTitles: d3Selection<SVGElement> = chartElement.append("svg");
+        const topTitles: d3Selection<SVGElement> = chartElement.append("svg");
         let topTitlestext: d3Update<PrimitiveValue> = topTitles.selectAll("*").data([uniqueColumns[index]]);
 
         const topTitlestextEnter = topTitlestext.enter()
@@ -439,7 +440,7 @@ export class RenderVisual {
 
         topTitlestext = topTitlestext.merge(topTitlestextEnter);
 
-        let textProperties: TextProperties = {
+        const textProperties: TextProperties = {
             fontFamily,
             fontSize: fontSizeInPx
         }
@@ -470,7 +471,7 @@ export class RenderVisual {
             })
             .call((text: d3Selection<any>) => {
                 const textSelectionX: d3Selection<any> = text;
-                let x = leftSpace + chartSize.width / 2;
+                const x = leftSpace + chartSize.width / 2;
 
                 textSelectionX.attr(
                     "transform", svg.translate(x, topSpace + textHeight / 2)
@@ -478,8 +479,9 @@ export class RenderVisual {
             });
     }
 
+    // eslint-disable-next-line max-lines-per-function
     public static renderSmallMultipleTitles(options: SmallMultipleOptions, settings: smallMultipleSettings) { 
-        let uniqueColumns: PrimitiveValue[] = options.columns,
+        const uniqueColumns: PrimitiveValue[] = options.columns,
             uniqueRows: PrimitiveValue[] = options.rows,
             chartSize: ISize = options.chartSize,
             chartElement: d3Selection<any> = options.chartElement,
@@ -490,7 +492,7 @@ export class RenderVisual {
             rowsInFlow: number = options.rowsInFlow;
 
         if (settings.layoutMode === LayoutMode.Matrix) {
-            let topTitles: d3Selection<SVGElement> = chartElement.append("svg");
+            const topTitles: d3Selection<SVGElement> = chartElement.append("svg");
             let topTitlestext: d3Update<PrimitiveValue> = topTitles.selectAll("*").data(uniqueColumns);
 
             const topTitlestextEnter = topTitlestext.enter()
@@ -503,7 +505,7 @@ export class RenderVisual {
 
             topTitlestext = topTitlestext.merge(topTitlestextEnter);
 
-            let textProperties: TextProperties = {
+            const textProperties: TextProperties = {
                 fontFamily,
                 fontSize: fontSizeInPx
             }
@@ -535,7 +537,7 @@ export class RenderVisual {
                 .call((text: d3Selection<any>) => {
                     for (let j = 0; j < uniqueColumns.length; ++j) { 
                         const textSelectionX: d3Selection<any> = d3.select(text.nodes()[j]);
-                        let x = leftSpace + j * chartSize.width + chartSize.width / 2 + this.gapBetweenCharts * j;
+                        const x = leftSpace + j * chartSize.width + chartSize.width / 2 + this.gapBetweenCharts * j;
 
                         textSelectionX.attr(
                             "transform", svg.translate(x, topSpace / 2)
@@ -544,12 +546,12 @@ export class RenderVisual {
                 });
         }
 
-        let textProperties: TextProperties = {
+        const textProperties: TextProperties = {
             fontFamily,
             fontSize: fontSizeInPx
         }
 
-        let leftTitles: d3Selection<SVGElement> = chartElement.append("svg");
+        const leftTitles: d3Selection<SVGElement> = chartElement.append("svg");
         let leftTitlesText: d3Update<PrimitiveValue> = leftTitles.selectAll("*").data(uniqueRows);
 
         const leftTitlesTextEnter = leftTitlesText.enter()
@@ -593,7 +595,7 @@ export class RenderVisual {
 
                     if (settings.layoutMode === LayoutMode.Flow) {
                         
-                        let previousChartGroupHeight: number = i * rowsInFlow * chartSize.height + this.gapBetweenCharts * i * rowsInFlow + topSpace * rowsInFlow * i;
+                        const previousChartGroupHeight: number = i * rowsInFlow * chartSize.height + this.gapBetweenCharts * i * rowsInFlow + topSpace * rowsInFlow * i;
                         y = previousChartGroupHeight + rowsInFlow * chartSize.height / 2 + topSpace;
                     } else {
                         y = i * chartSize.height + chartSize.height / 2 + topSpace * 2 + this.gapBetweenCharts * i;
@@ -617,8 +619,8 @@ export class RenderVisual {
             xValue = axes.x.dataDomain[1];
         }
 
-        let x = axes.x.scale(xValue);
-        let y = axes.y.scale(axes.y.dataDomain[0]);
+        const x = axes.x.scale(xValue);
+        const y = axes.y.scale(axes.y.dataDomain[0]);
 
         if (line.node()) {
             element.selectAll("line").remove();
@@ -667,14 +669,14 @@ export class RenderVisual {
             );
         }
 
-        let textProperties: TextProperties = {
+        const textProperties: TextProperties = {
             fontFamily: "wf_standard-font, helvetica, arial, sans-serif",
             fontSize: "10px"
         };            
 
-        let text: string = this.getLineText(settings);
-        let textWidth: number = TextMeasurementService.measureSvgTextWidth(textProperties, text);
-        let textHeight: number = TextMeasurementService.estimateSvgTextHeight(textProperties);
+        const text: string = this.getLineText(settings);
+        const textWidth: number = TextMeasurementService.measureSvgTextWidth(textProperties, text);
+        const textHeight: number = TextMeasurementService.estimateSvgTextHeight(textProperties);
 
         let label: d3Selection<any> = element.select(".const-label");
 
@@ -707,10 +709,10 @@ export class RenderVisual {
     }
 
     private static getLineText(settings: constantLineSettings): string {
-        let displayUnits: number = settings.displayUnits;
-        let precision = settings.precision;
+        const displayUnits: number = settings.displayUnits;
+        const precision = settings.precision;
 
-        let formatter = ValueFormatter.create({
+        const formatter = ValueFormatter.create({
             value: displayUnits,
             value2: 0,
             precision: precision,
@@ -749,7 +751,7 @@ export class RenderVisual {
             yResult += y;
         }
 
-        let leftBorder: number = axes.x.scale(axes.x.dataDomain[0]),
+        const leftBorder: number = axes.x.scale(axes.x.dataDomain[0]),
             rightBorder: number = axes.x.scale(axes.x.dataDomain[1]);
 
         if (xResult <= leftBorder) {
@@ -778,8 +780,8 @@ export class RenderVisual {
             positionAcross = x + marginAcross;
         }
 
-        let minPosition: number = axes.x.scale(axes.x.dataDomain[0]);
-        let maxPosition: number = axes.x.scale(axes.x.dataDomain[1]);
+        const minPosition: number = axes.x.scale(axes.x.dataDomain[0]);
+        const maxPosition: number = axes.x.scale(axes.x.dataDomain[1]);
 
         if (positionAcross <= minPosition) {
             positionAcross = minPosition + marginAcross;

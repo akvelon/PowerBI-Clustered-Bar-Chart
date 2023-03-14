@@ -2,7 +2,7 @@
 
 import { Selection } from 'd3-selection';
 import { AxisRangeType, categoryAxisSettings, categoryLabelsSettings, valueAxisSettings, VisualSettings } from "./settings";
-import { CategoryDataPoints, IAxes, ISize, VisualData, VisualDataPoint, VisualMeasureMetadata } from "./visualInterfaces";
+import { IAxes, ISize, VisualData, VisualDataPoint, VisualMeasureMetadata } from "./visualInterfaces";
 export type d3Selection<T> = Selection<any, T, any, any>;
 export type d3Update<T> = Selection<any, T, any, any>;
 export type d3Group<T> = Selection<any, T, any, any>;
@@ -32,10 +32,10 @@ import { max, min } from 'd3-array';
 const DisplayUnitValue: number = 1;
 
 export function calculateBarCoordianatesByData(data: VisualData, settings: VisualSettings, dataPointThickness: number, isSmallMultiple: boolean = false): void {
-    let dataPoints: VisualDataPoint[] = data.dataPoints;
-    let axes: IAxes = data.axes;
+    const dataPoints: VisualDataPoint[] = data.dataPoints;
+    const axes: IAxes = data.axes;
 
-    let legendDataPointsCount: number = data.legendData
+    const legendDataPointsCount: number = data.legendData
                                                 && data.legendData.dataPoints ? data.legendData.dataPoints.length : 1;
 
     this.calculateBarCoordianates(dataPoints, legendDataPointsCount, axes, settings, dataPointThickness, isSmallMultiple);
@@ -61,7 +61,7 @@ export function calculateBarCoordianates(dataPoints: VisualDataPoint[],
     dataPoints.forEach(point => {
         let height = 0;
         if (axes.yIsScalar && categoryAxisIsContinuous) {
-            let start = skipCategoryStartEnd ? null : settings.categoryAxis.start,
+            const start = skipCategoryStartEnd ? null : settings.categoryAxis.start,
                 end = skipCategoryStartEnd ? null : settings.categoryAxis.end;
 
             height = start != null && start > point.category || dataPointThickness < 0 ? 0 : dataPointThickness / clustersCount;
@@ -99,7 +99,7 @@ export function calculateBarCoordianates(dataPoints: VisualDataPoint[],
             return;
         }
 
-        let fromCoordinate: number = axes.x.scale(fromValue);
+        const fromCoordinate: number = axes.x.scale(fromValue);
 
         let toValue = point.value >= 0 ? point.value : 0;
 
@@ -110,7 +110,7 @@ export function calculateBarCoordianates(dataPoints: VisualDataPoint[],
             toValue = maxValue;
         }
 
-        let toCoordinate: number = axes.x.scale(toValue);
+        const toCoordinate: number = axes.x.scale(toValue);
 
         if ( toCoordinate <= fromCoordinate ){
             setZeroCoordinatesForPoint(point);
@@ -143,22 +143,20 @@ export function recalculateThicknessForContinuous(dataPoints: VisualDataPoint[],
     let minHeight: number = 1.5,
         minDistance: number = Number.MAX_VALUE;
 
-    let dataPointsSorted: VisualDataPoint[] = dataPoints.sort((a, b) => {
+    const dataPointsSorted: VisualDataPoint[] = dataPoints.sort((a, b) => {
         return a.barCoordinates.y - b.barCoordinates.y;
     });
 
     let firstDataPoint: VisualDataPoint = dataPointsSorted[0];
 
     for (let i = 1; i < dataPointsSorted.length; ++i) {
-        let distance: number = dataPointsSorted[i].barCoordinates.y - firstDataPoint.barCoordinates.y;
+        const distance: number = dataPointsSorted[i].barCoordinates.y - firstDataPoint.barCoordinates.y;
 
         minDistance = distance < minDistance ? distance : minDistance;
         firstDataPoint = dataPointsSorted[i];
     }
 
-    if (minDistance < minHeight) {
-        
-    } else if (minHeight < minDistance && minDistance < dataPointThickness) {
+    if (minHeight < minDistance && minDistance < dataPointThickness) {
         minHeight = minDistance;
     } else {
         minHeight = dataPointThickness;
@@ -189,29 +187,29 @@ export function calculateLabelCoordinates(data: VisualData,
         return;
     }
 
-    let dataPointsArray: VisualDataPoint[] = dataPoints || data.dataPoints;
+    const dataPointsArray: VisualDataPoint[] = dataPoints || data.dataPoints;
 
-    let dataLabelFormatter: IValueFormatter = formattingUtils.createFormatter(settings.displayUnits,
+    const dataLabelFormatter: IValueFormatter = formattingUtils.createFormatter(settings.displayUnits,
                                                                     settings.precision,
                                                                     metadata.cols.value,
                                                                     formattingUtils.getValueForFormatter(data));
 
-    let textPropertiesForWidth: TextProperties = formattingUtils.getTextProperties(settings);
-    let textPropertiesForHeight: TextProperties = formattingUtils.getTextPropertiesForHeightCalculation(settings);
+    const textPropertiesForWidth: TextProperties = formattingUtils.getTextProperties(settings);
+    const textPropertiesForHeight: TextProperties = formattingUtils.getTextPropertiesForHeightCalculation(settings);
 
     dataPointsArray.forEach(dataPoint => {
-        let formattedText: string = dataLabelFormatter.format(dataPoint.value);
+        const formattedText: string = dataLabelFormatter.format(dataPoint.value);
         textPropertiesForHeight.text = formattedText;
 
-        let textWidth: number = TextMeasurementService.measureSvgTextWidth(textPropertiesForWidth, formattedText);
-        let textHeight: number = TextMeasurementService.estimateSvgTextHeight(textPropertiesForHeight);
+        const textWidth: number = TextMeasurementService.measureSvgTextWidth(textPropertiesForWidth, formattedText);
+        const textHeight: number = TextMeasurementService.estimateSvgTextHeight(textPropertiesForHeight);
 
-        let barHeight: number = dataPoint.barCoordinates.height;
+        const barHeight: number = dataPoint.barCoordinates.height;
 
         if (settings.overflowText || textHeight +
             (settings.showBackground ? DataLabelHelper.labelBackgroundHeightPadding : 0) < barHeight) {
-            let dy: number = dataPoint.barCoordinates.y + dataPoint.barCoordinates.height / 2 + (textHeight - 3) / 2,
-                dx: number = DataLabelHelper.calculatePositionShift(settings, textWidth, dataPoint, chartWidth, isLegendRendered);
+            const dy: number = dataPoint.barCoordinates.y + dataPoint.barCoordinates.height / 2 + (textHeight - 3) / 2,
+                dx: number = DataLabelHelper.calculatePositionShift(settings, textWidth, dataPoint, chartWidth);
 
             if (dx !== null) {
                 dataPoint.labelCoordinates = {
@@ -233,7 +231,7 @@ export function getNumberOfValues(dataView: DataView): number {
     const columns: DataViewMetadataColumn[] = dataView.metadata.columns;
     let valueFieldsCount: number = 0;
 
-    for (let columnName in columns) {
+    for (const columnName in columns) {
         const column: DataViewMetadataColumn = columns[columnName];
 
         if (column.roles && column.roles[Field.Value]) {
@@ -274,7 +272,7 @@ export function getUnitType(xAxis: IAxisProperties): string | null {
 }
 
 export function getTitleWithUnitType(title, axisStyle, axis: IAxisProperties): string | null {
-    let unitTitle = visualUtils.getUnitType(axis) || "No unit";
+    const unitTitle = visualUtils.getUnitType(axis) || "No unit";
     switch (axisStyle) {
         case "showUnitOnly": {
             return unitTitle;
@@ -312,18 +310,18 @@ export function calculateBarHeight(
     settings: VisualSettings,
     isSmallMultiple: boolean = false): number {
 
-    let currentBarHeight = visualSize.height / categoriesCount;
+    const currentBarHeight = visualSize.height / categoriesCount;
     let barHeight: number = 0;
 
     if (settings.categoryAxis.axisType === "categorical") {
-        let innerPadding: number = categoryInnerPadding / 100;
+        const innerPadding: number = categoryInnerPadding / 100;
         barHeight = min([CategoryMaxHeight, max([CategoryMinHeight, currentBarHeight])]) * (1 - innerPadding);
     } else {
         let dataPoints = [...visualDataPoints];
 
         const skipStartEnd: boolean = isSmallMultiple && settings.categoryAxis.rangeType !== AxisRangeType.Custom;
 
-        let start = skipStartEnd ? null : settings.categoryAxis.start,
+        const start = skipStartEnd ? null : settings.categoryAxis.start,
             end = skipStartEnd ? null : settings.categoryAxis.end;
 
         if (start != null || end != null) {
@@ -331,16 +329,16 @@ export function calculateBarHeight(
                                             &&  end != null ? x.value <= end : true)
         }
 
-        let dataPointsCount: number = dataPoints.map(x => x.category).filter((v, i, a) => a.indexOf(v) === i).length;
+        const dataPointsCount: number = dataPoints.map(x => x.category).filter((v, i, a) => a.indexOf(v) === i).length;
 
         if (dataPointsCount < 3) {
-            let devider: number = 8;
+            const devider: number = 8;
             barHeight = visualSize.height / devider;
         } else if (dataPointsCount < 4) {
-            let devider: number = 3.75;
+            const devider: number = 3.75;
             barHeight = visualSize.height / devider;
         } else {
-            let devider: number = 3.75 + 1.25 * (dataPointsCount - 3); 
+            const devider: number = 3.75 + 1.25 * (dataPointsCount - 3); 
             barHeight = visualSize.height / devider;
         }
     }
@@ -353,7 +351,7 @@ export function getLabelsMaxWidth(group: d3Group<any>): number {
 
     if (group) {
         group.nodes().forEach((item: any) => {
-            let dimension: ClientRect = item.getBoundingClientRect();
+            const dimension: ClientRect = item.getBoundingClientRect();
             widths.push(max([dimension.width, dimension.height]));
         });
     }
@@ -370,7 +368,7 @@ export function getLabelsMaxHeight(group: d3Group<any>): number {
 
     if (group) {
         group.nodes().forEach((item: any) => {
-            let dimension: ClientRect = item.getBoundingClientRect();
+            const dimension: ClientRect = item.getBoundingClientRect();
             heights.push(dimension.height);
         });
     }
@@ -384,7 +382,7 @@ export function getLabelsMaxHeight(group: d3Group<any>): number {
 
 export function GetYAxisTitleThickness(valueSettings: valueAxisSettings): number {
 
-    let textPropertiesForHeight: TextProperties = {
+    const textPropertiesForHeight: TextProperties = {
         fontFamily: valueSettings.titleFontFamily,
         fontSize: valueSettings.titleFontSize.toString()
     };
@@ -394,7 +392,7 @@ export function GetYAxisTitleThickness(valueSettings: valueAxisSettings): number
 
 export function GetXAxisTitleThickness(categorySettings: categoryAxisSettings): number {
 
-    let textPropertiesForHeight: TextProperties = {
+    const textPropertiesForHeight: TextProperties = {
         fontFamily: categorySettings.titleFontFamily,
         fontSize: categorySettings.titleFontSize.toString()
     };
@@ -427,7 +425,7 @@ export function compareObjects(obj1: any[], obj2: any[], property: string): bool
 
 export function categoryIsScalar(metadata: VisualMeasureMetadata): boolean {
     const categoryType: valueType.ValueType = axis.getCategoryValueType(metadata.cols.category);
-    let isOrdinal: boolean = axis.isOrdinal(categoryType);
+    const isOrdinal: boolean = axis.isOrdinal(categoryType);
 
     return !isOrdinal;
 }

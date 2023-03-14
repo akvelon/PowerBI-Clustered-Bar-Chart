@@ -27,10 +27,10 @@ export class DataLabelHelper {
                                             barCoordinates: Coordinates,
                                             settings: categoryLabelsSettings) {
 
-        let barX: number = barCoordinates.x,
-            barWidth: number = barCoordinates.width,
-            backGroundShift: number = settings.showBackground ? DataLabelHelper.labelBackgroundXShift : 0,
-            labelRightBorderPosition: number = shift + labelWidth + backGroundShift;
+        const barX: number = barCoordinates.x;
+        const barWidth: number = barCoordinates.width;
+        const backGroundShift: number = settings.showBackground ? DataLabelHelper.labelBackgroundXShift : 0;
+        let labelRightBorderPosition: number = shift + labelWidth + backGroundShift;
 
         const gap: number = 6;
 
@@ -61,17 +61,17 @@ export class DataLabelHelper {
                                             barCoordinates: Coordinates,
                                             settings: categoryLabelsSettings) {
 
-        let barWidth: number = barCoordinates.width,
+        const barWidth: number = barCoordinates.width,
             backGroundShift: number = settings.showBackground ? DataLabelHelper.labelBackgroundXShift : 0,
             labelLeftBorderPosition: number = shift - backGroundShift,
             labelRightBorderPosition: number = shift + labelWidth + backGroundShift;
 
         const gap: number = 6;
 
-        let canOverflow: boolean = DataLabelHelper.canOverflow(settings);
+        const canOverflow: boolean = DataLabelHelper.canOverflow(settings);
 
-        let maxPossibleRightPosition: number = canOverflow ? chartWidth : shift + barWidth - gap;
-        let maxPossibleLeftPosition: number = canOverflow ? 1 : shift;
+        const maxPossibleRightPosition: number = canOverflow ? chartWidth : shift + barWidth - gap;
+        const maxPossibleLeftPosition: number = canOverflow ? 1 : shift;
         if (labelLeftBorderPosition < maxPossibleLeftPosition) {
             shift = maxPossibleLeftPosition + backGroundShift;
 
@@ -93,12 +93,11 @@ export class DataLabelHelper {
     public static calculatePositionShift(settings: categoryLabelsSettings,
                                         labelWidth: number,
                                         dataPoint: VisualDataPoint,
-                                        chartWidth: number,
-                                        isLegendRendered: boolean): number {
+                                        chartWidth: number): number {
 
-        let barCoordinates = dataPoint.barCoordinates;
+        const barCoordinates = dataPoint.barCoordinates;
 
-        let shift: number = dataPoint.value >= 0 ? 
+        const shift: number = dataPoint.value >= 0 ? 
                                 this.calculateLabelPositionShift(settings, labelWidth, barCoordinates) : 
                                 this.calculateLabelPositionShiftForNegativeValues(settings, labelWidth, barCoordinates);
 
@@ -113,7 +112,7 @@ export class DataLabelHelper {
 
         const backgroundMargin: number = settings.showBackground ? 6 : 0;
 
-        let barX: number = barCoordinates.x,
+        const barX: number = barCoordinates.x,
             barWidth: number = barCoordinates.width;
 
         switch (settings.labelPosition) {
@@ -141,7 +140,7 @@ export class DataLabelHelper {
 
         const backgroundMargin: number = settings.showBackground ? 6 : 0;
 
-        let barX: number = barCoordinates.x,
+        const barX: number = barCoordinates.x,
             barWidth: number = barCoordinates.width;
 
         switch (settings.labelPosition) {

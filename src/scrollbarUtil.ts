@@ -99,7 +99,7 @@ export class ScrollBar {
     updateData(action: ScrollbarState, updateType: VisualUpdateType): void {
         this.settings.minCategorySpace =  this.visual.getSettings().categoryAxis.minCategoryWidth;
 
-        let availableSpace: number = this.visual.viewport.height - this.visual.visualMargin.top - this.visual.visualMargin.bottom;
+        const availableSpace: number = this.visual.viewport.height - this.visual.visualMargin.top - this.visual.visualMargin.bottom;
 
         this.capacity = Math.floor(availableSpace / this.settings.minCategorySpace);
         this.scrolling.positionsCount = this.visual.categoriesCount - this.capacity;
@@ -132,8 +132,8 @@ export class ScrollBar {
     }
 
     getIndexOfFirstVisibleDataPoint(): number {
-        let allDataPoints: VisualDataPoint[] = this.visual.getAllDataPoints().filter(x => !x.highlight);;
-        let firstVisibleDataPoint: VisualDataPoint = this.visibleDataPoints[0];
+        const allDataPoints: VisualDataPoint[] = this.visual.getAllDataPoints().filter(x => !x.highlight);
+        const firstVisibleDataPoint: VisualDataPoint = this.visibleDataPoints[0];
 
         for (let i: number = 0; i < allDataPoints.length; i++) {
             if ( allDataPoints[i] === firstVisibleDataPoint ) {
@@ -203,7 +203,7 @@ export class ScrollBar {
         this.visibleDataPointsByCategories = [];
         this.visibleDataPoints = [];
 
-        let dataPointsByCategories: CategoryDataPoints[] = this.visual.getDataPointsByCategories();
+        const dataPointsByCategories: CategoryDataPoints[] = this.visual.getDataPointsByCategories();
 
         for (let categoryIndex: number = 0; categoryIndex < dataPointsByCategories.length; categoryIndex++) {
             if ( categoryIndex < this.scrolling.currentPosition) {
@@ -245,7 +245,7 @@ export class ScrollBar {
     }
 
     private updateMeasurements(): void {
-        let visualMargin: IMargin = this.visual.visualMargin;
+        const visualMargin: IMargin = this.visual.visualMargin;
         const track: Track = this.track;
 
         track.width = this.settings.trackSize;
@@ -254,7 +254,7 @@ export class ScrollBar {
         track.left = this.visual.viewport.width - this.settings.trackSize;
 
         if (this.visual.isLegendNeeded) {
-            let legendPosition = this.visual.settings.legend.position;
+            const legendPosition = this.visual.settings.legend.position;
 
             if ( legendPosition === 'Top' || legendPosition === 'TopCenter' ) {
                 track.top += this.visual.legendSize.height;
@@ -276,9 +276,9 @@ export class ScrollBar {
             "width", this.track.width + 'px'
         );
 
-        let visibleCategoriesCount: number = this.visibleDataPointsByCategories.length;
-        let allCategoriesCount: number = this.visual.getDataPointsByCategories().length;
-        let handleHeight: number = track.height * (visibleCategoriesCount / allCategoriesCount);
+        const visibleCategoriesCount: number = this.visibleDataPointsByCategories.length;
+        const allCategoriesCount: number = this.visual.getDataPointsByCategories().length;
+        const handleHeight: number = track.height * (visibleCategoriesCount / allCategoriesCount);
         this.handle.style('height', handleHeight + 'px');
 
         track.availableScrollDistance = track.height - handleHeight;

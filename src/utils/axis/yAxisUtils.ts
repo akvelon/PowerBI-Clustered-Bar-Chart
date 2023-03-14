@@ -48,6 +48,7 @@ export interface CreateAxisOptionsExtended extends CreateAxisOptions {
  * Create a D3 axis including scale. Can be vertical or horizontal, and either datetime, numeric, or text.
  * @param options The properties used to create the axis.
  */
+// eslint-disable-next-line max-lines-per-function
 export function createAxis(
   options: CreateAxisOptionsExtended
 ): IAxisProperties {

@@ -22,13 +22,13 @@ export function getMetadata(
     grouped: DataViewValueColumnGroup[] | undefined,
     source: DataViewMetadataColumn | undefined): VisualMeasureMetadata {
 
-    let xAxisLabel: string = "",
-        yAxisLabel: string = "",
-        valueIndex = grouped && getMeasureIndexOfRole(grouped, ColumnValue),
-        categoryIndex = categories && getCategoryIndexOfRole(categories, ColumnCategory),
-        gradientIndex = grouped && getMeasureIndexOfRole(grouped, ColumnGradient),
-        valueCol: DataViewMetadataColumn | undefined,
-        categoryCol: DataViewMetadataColumn | undefined;
+    let xAxisLabel: string = "";
+    let yAxisLabel: string = "";
+    const valueIndex = grouped && getMeasureIndexOfRole(grouped, ColumnValue);
+    const categoryIndex = categories && getCategoryIndexOfRole(categories, ColumnCategory);
+    const gradientIndex = grouped && getMeasureIndexOfRole(grouped, ColumnGradient);
+    let valueCol: DataViewMetadataColumn | undefined;
+    let categoryCol: DataViewMetadataColumn | undefined;
 
 
     if (grouped && grouped.length) {

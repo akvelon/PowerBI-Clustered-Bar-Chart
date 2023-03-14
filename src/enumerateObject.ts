@@ -15,8 +15,8 @@ import { VisualData, VisualDataPoint } from "./visualInterfaces";
 
 export class EnumerateObject {
     private static fillDataPointInstancesForLegend(visualData: VisualData, instances: VisualObjectInstance[]) {
-        for (let index in visualData.legendData.dataPoints) {
-            let dataPoint: LegendDataPoint = visualData.legendData.dataPoints[index];
+        for (const index in visualData.legendData.dataPoints) {
+            const dataPoint: LegendDataPoint = visualData.legendData.dataPoints[index];
 
             instances.push({
                 objectName: "dataPoint",
@@ -32,8 +32,8 @@ export class EnumerateObject {
     }
 
     private static fillDataPointInstancesForNoLegend(visualData: VisualData, instances: VisualObjectInstance[]) {
-        for (let index in visualData.dataPoints) {
-            let dataPoint: VisualDataPoint = visualData.dataPoints[index];
+        for (const index in visualData.dataPoints) {
+            const dataPoint: VisualDataPoint = visualData.dataPoints[index];
 
             instances.push({
                 objectName: "dataPoint",
@@ -48,14 +48,15 @@ export class EnumerateObject {
         }
     }
 
+    // eslint-disable-next-line max-lines-per-function
     public static setInstances(
         settings: VisualSettings,
         instanceEnumeration: any,
         yIsScalar: boolean,
         visualData: VisualData) {
 
-        let instances: VisualObjectInstance[] = (instanceEnumeration as VisualObjectInstanceEnumerationObject).instances;
-        let instance: VisualObjectInstance = instances[0];
+        const instances: VisualObjectInstance[] = (instanceEnumeration as VisualObjectInstanceEnumerationObject).instances;
+        const instance: VisualObjectInstance = instances[0];
 
         const isSmallMultiple: boolean = visualData.isSmallMultiple;
         const isCategorical: boolean = settings.categoryAxis.axisType === "categorical";

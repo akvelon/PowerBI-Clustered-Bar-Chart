@@ -22,9 +22,9 @@ export class CustomLegendBehavior implements IInteractiveBehavior {
     }
 
     public bindEvents(options: LegendBehaviorOptions, selectionHandler: ISelectionHandler): void {
-        let legendItems = options.legendItems;
+        const legendItems = options.legendItems;
         this.legendIcons = options.legendIcons;
-        let clearCatcher = options.clearCatcher;
+        const clearCatcher = options.clearCatcher;
 
         legendItems.on("click", (event: MouseEvent, d) => {
             selectionHandler.handleSelection(d, event.ctrlKey);

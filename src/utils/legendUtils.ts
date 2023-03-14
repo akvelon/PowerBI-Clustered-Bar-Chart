@@ -9,7 +9,6 @@ import DataViewCategoryColumn = powerbiApi.DataViewCategoryColumn;
 import DataViewValueColumnGroup = powerbiApi.DataViewValueColumnGroup;
 import DataView = powerbiApi.DataView;
 import IVisualHost = powerbiApi.extensibility.visual.IVisualHost;
-import ISelectionId = powerbiApi.visuals.ISelectionId;
 
 import * as d3 from 'd3-selection';
 
@@ -60,9 +59,8 @@ export function buildLegendData(
 
     if (hasDynamicSeries) {
         for (let i: number = 0, len: number = grouped.length; i < len; i++) {
-            let grouping: DataViewValueColumnGroup = grouped[i],
-                selectionId: ISelectionId,
-                color: string | null = null;
+            const grouping: DataViewValueColumnGroup = grouped[i];
+            let color: string | null = null;
             const objects = grouping.objects;
             if (grouping.name) {
                 color = colorHelper.getColorForSeriesValue(
@@ -70,7 +68,7 @@ export function buildLegendData(
                     grouping.name);
             }
 
-            selectionId = host.createSelectionIdBuilder()
+            const selectionId = host.createSelectionIdBuilder()
                 .withSeries(dataValues, grouping)
                 .createSelectionId();
 
@@ -133,7 +131,7 @@ export function getSuitableLegendData( dataView: DataView, host: IVisualHost, le
 }
 
 export function getLegendColors(legendDataPoints: LegendDataPoint[]): Array<string> {
-    let legendColors: string[] = [];
+    const legendColors: string[] = [];
 
     legendDataPoints.forEach(legendDataPoint => legendColors.push(legendDataPoint.color));
 
@@ -154,11 +152,8 @@ export function buildLegendDataForMultipleValues(
     const values = dataView.categorical?.values;
 
     for (let i = 0; i < numberOfValueFields; i++) {
-        let color: string | undefined;
-        let selectionId: ISelectionId;
-
         const objects = values?.[i].source.objects;
-        color = colorHelper.getColorForMeasure(
+        const color = colorHelper.getColorForMeasure(
             objects,
         i + "value");
         
@@ -167,7 +162,7 @@ export function buildLegendDataForMultipleValues(
         if (queryName) {
             builder.withMeasure(queryName);
         }
-        selectionId = builder.createSelectionId();
+        const selectionId = builder.createSelectionId();
 
         legendItems.push({
             color: color || '',
@@ -196,8 +191,8 @@ export function renderLegend(
         dataPoints: []
     };
 
-    let legendObject: DataViewObject = legendProperties.legendObject;
-    let legendData = legendProperties.data;
+    const legendObject: DataViewObject = legendProperties.legendObject;
+    const legendData = legendProperties.data;
 
     legendDataForRender.labelColor = legendObject.legendNameColor as string;
     legendDataForRender.title = legendObject.titleText as string;
@@ -246,9 +241,7 @@ export function renderLegend(
 export function getLegendProperties(
     legendSettings: legendSettings): DataViewObject {
 
-    let dataViewObject: DataViewObject;
-
-    dataViewObject =  {
+    return {
         show: legendSettings.show,
         position: legendSettings.position,
         showTitle: legendSettings.showTitle,
@@ -257,13 +250,11 @@ export function getLegendProperties(
         fontSize: legendSettings.fontSize,
         fontFamily: legendSettings.fontFamily,
     };
-
-    return dataViewObject;
 }
 
 export function setLegendProperties(dataView: DataView, host: IVisualHost, settings: legendSettings): LegendProperties {
-    let legendObject: DataViewObject = getLegendProperties(settings);
-    let legendData = getSuitableLegendData(dataView, host, settings);
+    const legendObject: DataViewObject = getLegendProperties(settings);
+    const legendData = getSuitableLegendData(dataView, host, settings);
     const legendIsRendered = legendData === undefined ? false : legendData.dataPoints.length > 0;
     const legendColors = legendIsRendered && legendData ? getLegendColors(legendData.dataPoints) : [];
 

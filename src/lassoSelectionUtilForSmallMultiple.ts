@@ -20,10 +20,10 @@ enum SelectionAction {
     Remove
 }
 
-module Constants {
-    export const RectClass: string = 'selection-rect';
-    export const RectAdditionalClass: string = 'selection-rect-small-multiple';
-    export const EventNameSpace: string = '.selectionForSmallMultiple';
+class Constants {
+    public static RectClass: string = 'selection-rect';
+    public static RectAdditionalClass: string = 'selection-rect-small-multiple';
+    public static EventNameSpace: string = '.selectionForSmallMultiple';
 }
 
 export class LassoSelectionForSmallMultiple {
@@ -172,8 +172,8 @@ export class LassoSelectionForSmallMultiple {
     private performSelection(): void {
         const bars: d3Selection<any> = this.domItems.get();
 
-        let handledDataPoints: VisualDataPoint[] = [];
-        let selectedDataPoints: VisualDataPoint[] = [];
+        const handledDataPoints: VisualDataPoint[] = [];
+        const selectedDataPoints: VisualDataPoint[] = [];
 
         bars.each((d: VisualDataPoint) => {
             if ( d.preSelected ){
@@ -209,21 +209,18 @@ class Preselection {
     }
 
     updatePreselectionData(selectionService: Lasso, bars: d3Selection<any>, ctrlKey: boolean): void {
-        const self: Preselection = this;
-        
         if ( !ctrlKey ) {
-            self.action = SelectionAction.Add;
+            this.action = SelectionAction.Add;
         }
 
         bars.each(function(d: VisualDataPoint){
-            const bar: HTMLElement = this;
-            const collision: boolean = selectionService.detectCollision(bar);
+            const collision: boolean = selectionService.detectCollision(this);
 
-            if ( self.action === null && collision ){
-                self.action = d.selected ? SelectionAction.Remove : SelectionAction.Add;
+            if (this.action === null && collision ){
+                this.action = d.selected ? SelectionAction.Remove : SelectionAction.Add;
             }
 
-            switch (self.action){
+            switch (this.action){
                 case SelectionAction.Add : {
                     d.preSelected = collision && !d.selected;
                     break;
@@ -321,19 +318,17 @@ class DomItems {
 
     private setStroke(hasSelection: boolean) {
         this.bars.each(function(d: VisualDataPoint){ 
-            const bar: HTMLElement = this;
-            bar.style.stroke = hasSelection ? "#000000" : (d.color || '');
+            this.style.stroke = hasSelection ? "#000000" : (d.color || '');
         });
     }
 
     private setOpacity(opacity: number, calculateOpacity?: ((d: VisualDataPoint) => number) ): void {
         this.bars.each(function(d: VisualDataPoint){
-            const bar: HTMLElement = this;
             const opacityValue: number | undefined = opacity ? opacity : calculateOpacity && calculateOpacity(d);
 
             if (opacityValue) {
-                bar.style.fillOpacity = opacityValue.toString();
-                bar.style.strokeOpacity = opacityValue.toString();
+                this.style.fillOpacity = opacityValue.toString();
+                this.style.strokeOpacity = opacityValue.toString();
             }
         });
     }
@@ -402,7 +397,7 @@ class Lasso {
     }
 
     detectCollision(element: HTMLElement): boolean {
-        let bounds: ClientRect = element.getBoundingClientRect();
+        const bounds: ClientRect = element.getBoundingClientRect();
 
         if (bounds.width === 0) {
             return false;
