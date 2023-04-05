@@ -192,7 +192,7 @@ export interface SmallMultipleOptions {
 export interface IBarVisual extends IVisual {
     getDataView(): powerbiApi.DataView;
     barClassName: string;
-    saveSelection(): unknown;
+    saveSelection(): void;
     webBehaviorSelectionHandler: any;
     getSettings(): VisualSettings;
     categoriesCount: number;
