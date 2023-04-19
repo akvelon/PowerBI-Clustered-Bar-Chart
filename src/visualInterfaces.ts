@@ -82,10 +82,8 @@ export interface VisualDataPoint extends SelectableDataPoint {
     fill?: string;
     barCoordinates?: Coordinates;
     labelCoordinates?: Coordinates;
-    percentValueForWidth: number;
-    percentValue: number;
     columnBy?: PrimitiveValue;
-    rowBy?: PrimitiveValue;         
+    rowBy?: PrimitiveValue;
     preSelected?: boolean;
     preRemoved?: boolean;
 }
@@ -101,7 +99,7 @@ export interface VisualData {
     dataPoints: VisualDataPoint[];
     legendData: LegendData;
     hasHighlight: boolean;
-    isLegendNeeded: boolean; 
+    isLegendNeeded: boolean;
     size?: ISize;
     axes: IAxes;
     categoriesCount: number;
@@ -129,7 +127,7 @@ export interface VisualMeasureMetadataIndexes {
     category?: number;
     value?: number;
     y?: number;
-    gradient?: number; 
+    gradient?: number;
     columnBy?: number;
     rowBy?: number;
 }

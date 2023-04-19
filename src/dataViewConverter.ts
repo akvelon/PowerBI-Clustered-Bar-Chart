@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-import powerbiApi from "powerbi-visuals-api";
+import powerbiApi from 'powerbi-visuals-api';
 import DataView = powerbiApi.DataView;
 import IVisualHost = powerbiApi.extensibility.visual.IVisualHost;
 import DataViewValueColumns = powerbiApi.DataViewValueColumns;
@@ -14,30 +14,31 @@ import DataViewCategoryColumn = powerbiApi.DataViewCategoryColumn;
 import PrimitiveValue = powerbiApi.PrimitiveValue;
 import DataViewCategorical = powerbiApi.DataViewCategorical;
 
-import { VisualColumns, VisualDataPoint } from "./visualInterfaces";
-import { converterHelper } from "powerbi-visuals-utils-dataviewutils";
-import { valueFormatter as ValueFormatter} from "powerbi-visuals-utils-formattingutils";
-import { ColorHelper } from "powerbi-visuals-utils-colorutils";
+import {VisualColumns, VisualDataPoint} from './visualInterfaces';
+import {converterHelper} from 'powerbi-visuals-utils-dataviewutils';
+import {valueFormatter as ValueFormatter} from 'powerbi-visuals-utils-formattingutils';
+import {ColorHelper} from 'powerbi-visuals-utils-colorutils';
 
-import { VisualSettings } from "./settings";
+import {VisualSettings} from './settings';
 
-import { sum as d3sum } from "d3-array";
+import {sum as d3sum} from 'd3-array';
 
 export enum Field {
-    Axis = <any>"Axis",
-    Legend = <any>"Legend",
-    Value = <any>"Value",
-    Gradient = <any>"Gradient",
-    ColumnBy = <any>"ColumnBy",
-    RowBy = <any>"RowBy",
-    Tooltips = <any>"Tooltips",
-    GroupedValues = <any>"GroupedValues"
+    Axis = <any>'Axis',
+    Legend = <any>'Legend',
+    Value = <any>'Value',
+    Gradient = <any>'Gradient',
+    ColumnBy = <any>'ColumnBy',
+    RowBy = <any>'RowBy',
+    Tooltips = <any>'Tooltips',
+    GroupedValues = <any>'GroupedValues'
 }
 
 export class DataViewConverter {
-    private static Highlighted: string = "Highlighted";
-    private static Blank: string = "(Blank)"; 
-    private static percentFormatString: string = "#,0.00%";
+    private static Highlighted: string = 'Highlighted';
+    private static Blank: string = '(Blank)';
+    private static percentFormatString: string = '#,0.00%';
+
     public static Convert(dataView: DataView, hostService: IVisualHost, settings: VisualSettings, legendColors: Array<string>): VisualDataPoint[] {
 
         if (this.IsAxisAndLegendSameField(dataView)) {
@@ -66,9 +67,9 @@ export class DataViewConverter {
     }
 
     public static IsCategoryFilled(dataView: DataView, categoryField: Field): boolean {
-        if (dataView.categorical 
-            && dataView.categorical.values 
-            && dataView.categorical.values.source 
+        if (dataView.categorical
+            && dataView.categorical.values
+            && dataView.categorical.values.source
             && dataView.categorical.values.source?.roles?.[categoryField]) {
             return true;
         }
@@ -143,7 +144,7 @@ export class DataViewConverter {
                 valueMetadata: DataViewMetadataColumn = columns[Field.Value][k].source;
 
             tooltipItems.push(this.createTooltipData(groupMetadata, legend));
-            tooltipItems.push(this.createPercentTooltipData(valueMetadata, value, 1));
+            tooltipItems.push(this.createTooltipData(valueMetadata, value));
 
             if (columns[Field.Tooltips] && columns[Field.Tooltips].length) {
                 columns[Field.Tooltips].filter(x => x.source.groupName === legend).forEach(tooltipColumn => {
@@ -154,12 +155,12 @@ export class DataViewConverter {
                 });
             }
 
-            const selectionBuilder =hostService.createSelectionIdBuilder();
+            let selectionBuilder = hostService.createSelectionIdBuilder();
             if (groupedValues) {
-                selectionBuilder.withSeries(columns[Field.GroupedValues], groupedValues[k])
+                selectionBuilder = selectionBuilder.withSeries(columns[Field.GroupedValues], groupedValues[k]);
             }
             if (seriesColumn[k].source.queryName) {
-                selectionBuilder.withMeasure(seriesColumn[k].source.queryName || '')
+                selectionBuilder = selectionBuilder.withMeasure(seriesColumn[k].source.queryName || '');
             }
             const identity: ISelectionId = selectionBuilder.createSelectionId();
 
@@ -168,9 +169,7 @@ export class DataViewConverter {
                     category: legend !== 0 && !legend ? this.Blank : legend,
                     series: legend,
                     value: value,
-                    percentValueForWidth: 1,
-                    percentValue: 1,
-                    shiftValue: value >= 0 ? 0 : -1,
+                    shiftValue: 0,
                     selected: false,
                     identity: identity,
                     color: color,
@@ -182,15 +181,13 @@ export class DataViewConverter {
                 if (highlightValue != null) {
                     const highlightTooltipItems: VisualTooltipDataItem[] = tooltipItems.slice();
 
-                    highlightTooltipItems.push(this.createPercentTooltipData(valueMetadata, highlightValue, 1, this.Highlighted));
+                    highlightTooltipItems.push(this.createTooltipData(valueMetadata, highlightValue, this.Highlighted));
 
                     data.push({
                         category: legend !== 0 && !legend ? this.Blank : legend,
                         series: legend,
                         value: highlightValue,
-                        percentValueForWidth: 1,
-                        percentValue: 1,
-                        shiftValue: highlightValue >= 0 ? 0 : -1,
+                        shiftValue: 0,
                         selected: false,
                         identity: identity,
                         highlight: true,
@@ -216,28 +213,24 @@ export class DataViewConverter {
 
         categoryColumn.values.forEach((categoryValue, i) => {
             let sum: number = 0;
-            let negativeSum: number = 0;
 
             const columnBy: PrimitiveValue = columns[Field.ColumnBy] && columns[Field.ColumnBy][0].values[i],
                 rowBy: PrimitiveValue = columns[Field.RowBy] && columns[Field.RowBy][0].values[i];
 
-            const categorySum: number = d3sum(columns[Field.Value].map(x => x.values[i] >= 0 ? x.values[i] : -x.values[i]));
-
             columns[Field.Legend].forEach((legend, k) => {
                 const value: number = columns[Field.Value][k].values[i];
-                const percentageValue: number = value / categorySum;
                 const color = legendColors[k];
 
-                
-                const selectionBuilder = hostService.createSelectionIdBuilder();
-                
+
+                let selectionBuilder = hostService.createSelectionIdBuilder();
+
                 if (groupedValues) {
-                    selectionBuilder
+                    selectionBuilder = selectionBuilder
                         .withCategory(categoryColumn, i)
-                        .withSeries(seriesColumn, groupedValues[k])
+                        .withSeries(seriesColumn, groupedValues[k]);
                 }
                 if (seriesColumn[k].source.queryName) {
-                    selectionBuilder.withMeasure(seriesColumn[k].source.queryName || '')
+                    selectionBuilder = selectionBuilder.withMeasure(seriesColumn[k].source.queryName || '');
                 }
                 const identity: ISelectionId = selectionBuilder.createSelectionId();
 
@@ -250,7 +243,7 @@ export class DataViewConverter {
 
                     tooltipItems.push(this.createTooltipData(categoryMetadata, categoryValue));
                     tooltipItems.push(this.createTooltipData(groupMetadata, legend));
-                    tooltipItems.push(this.createPercentTooltipData(valueMetadata, value, percentageValue));
+                    tooltipItems.push(this.createTooltipData(valueMetadata, value));
 
                     if (columns[Field.Tooltips] && columns[Field.Tooltips].length) {
                         columns[Field.Tooltips].filter(x => x.source.groupName === legend).forEach(tooltipColumn => {
@@ -262,49 +255,42 @@ export class DataViewConverter {
                     }
 
                     data.push({
-                        category: categoryValue !== 0 && !categoryValue ? "(Blank)" : categoryValue,
+                        category: categoryValue !== 0 && !categoryValue ? '(Blank)' : categoryValue,
                         series: legend,
                         value: value,
-                        percentValue: percentageValue,
-                        percentValueForWidth: percentageValue >= 0 ? percentageValue : -percentageValue,
-                        shiftValue: value >= 0 ? sum : negativeSum + percentageValue,
+                        shiftValue: sum,
                         selected: false,
                         identity: identity,
                         tooltips: tooltipItems,
                         color: color,
                         columnBy: columnBy,
-                        rowBy: rowBy
+                        rowBy: rowBy,
                     });
 
                     const highlightValue: number = columns[Field.Value][k].highlights ? columns[Field.Value][k].highlights[i] : null;
 
                     if (highlightValue != null) {
-                        const highlightPercentage: number = highlightValue / categorySum;
                         const highlightTooltipItems: VisualTooltipDataItem[] = tooltipItems.slice();
 
-                        highlightTooltipItems.push(this.createPercentTooltipData(valueMetadata, value, percentageValue, this.Highlighted));
+                        highlightTooltipItems.push(this.createTooltipData(valueMetadata, highlightValue, this.Highlighted));
 
                         data.push({
-                            category: categoryValue !== 0 && !categoryValue ? "(Blank)" : categoryValue,
+                            category: categoryValue !== 0 && !categoryValue ? '(Blank)' : categoryValue,
                             series: legend,
                             value: highlightValue,
-                            percentValue: highlightPercentage,
-                            percentValueForWidth: highlightPercentage >= 0 ? highlightPercentage : -highlightPercentage,
-                            shiftValue: highlightValue >= 0 ? sum : negativeSum,
+                            shiftValue: sum,
                             selected: false,
                             identity: identity,
                             highlight: true,
                             tooltips: highlightTooltipItems,
                             color: color,
                             columnBy: columnBy,
-                            rowBy: rowBy
-
+                            rowBy: rowBy,
                         });
                     }
-
-                    sum += percentageValue >= 0 ? percentageValue : 0;
-                    negativeSum += percentageValue < 0 ? percentageValue : 0;
                 }
+
+                ++sum;
             });
         });
 
@@ -321,24 +307,21 @@ export class DataViewConverter {
 
         categoryColumn.values.forEach((category, i) => {
             let sum: number = 0;
-            let negativeSum: number = 0;
 
             const columnBy: PrimitiveValue = columns[Field.ColumnBy] && columns[Field.ColumnBy][0].values[i],
                 rowBy: PrimitiveValue = columns[Field.RowBy] && columns[Field.RowBy][0].values[i];
 
-            const categorySum: number = d3sum(columns[Field.Value].map(x => x.values[i] >= 0 ? x.values[i] : -x.values[i]));
-
             columns[Field.Value].forEach((valueColumn, k) => {
                 const value: number = valueColumn.values[i];
                 const color = legendColors[k];
-                const percentageValue: number = value / categorySum;
-                
-                const selectionBuilder = hostService.createSelectionIdBuilder()
-                    .withCategory(categoryColumn, i)
+
+                let selectionBuilder = hostService.createSelectionIdBuilder()
+                    .withCategory(categoryColumn, i);
 
                 if (columns.Value?.[k].source.queryName) {
-                    selectionBuilder.withMeasure(columns.Value[k].source.queryName)
+                    selectionBuilder = selectionBuilder.withMeasure(columns.Value[k].source.queryName);
                 }
+
                 const identity: ISelectionId = selectionBuilder.createSelectionId();
 
                 if (value != null) {
@@ -348,7 +331,7 @@ export class DataViewConverter {
                         valueMetadata: DataViewMetadataColumn = valueColumn.source;
 
                     tooltipItems.push(this.createTooltipData(categoryMetadata, category));
-                    tooltipItems.push(this.createPercentTooltipData(valueMetadata, value, percentageValue));
+                    tooltipItems.push(this.createTooltipData(valueMetadata, value));
 
                     if (columns[Field.Tooltips] && columns[Field.Tooltips].length) {
                         columns[Field.Tooltips].forEach(tooltipColumn => {
@@ -360,46 +343,40 @@ export class DataViewConverter {
                     }
 
                     data.push({
-                        category: category !== 0 && !category ? "(Blank)" : category,
+                        category: category !== 0 && !category ? '(Blank)' : category,
                         value: value,
-                        percentValue: percentageValue,
-                        percentValueForWidth: percentageValue >= 0 ? percentageValue : -percentageValue,
-                        shiftValue: value >= 0 ? sum : negativeSum + percentageValue,
+                        shiftValue: sum,
                         selected: false,
                         identity: identity,
                         tooltips: tooltipItems,
                         color: color,
                         columnBy: columnBy,
-                        rowBy: rowBy
+                        rowBy: rowBy,
                     });
 
                     const highlightValue: number = valueColumn.highlights ? valueColumn.highlights[i] : null;
 
                     if (highlightValue != null) {
-                        const highlightPercentage: number = highlightValue / categorySum;
                         const highlightTooltipItems: VisualTooltipDataItem[] = tooltipItems.slice();
 
-                        highlightTooltipItems.push(this.createPercentTooltipData(valueMetadata, highlightValue, highlightPercentage, this.Highlighted));
+                        highlightTooltipItems.push(this.createTooltipData(valueMetadata, highlightValue, this.Highlighted));
 
                         data.push({
-                            category: category !== 0 && !category ? "(Blank)" : category,
+                            category: category !== 0 && !category ? '(Blank)' : category,
                             value: highlightValue,
-                            percentValue: highlightPercentage,
-                            percentValueForWidth: highlightPercentage >= 0 ? highlightPercentage : -highlightPercentage,
-                            shiftValue: highlightPercentage >= 0 ? sum : negativeSum + highlightPercentage,
+                            shiftValue: sum,
                             selected: false,
                             identity: identity,
                             highlight: true,
                             tooltips: tooltipItems,
                             color: color,
                             columnBy: columnBy,
-                            rowBy: rowBy
+                            rowBy: rowBy,
                         });
                     }
-
-                    sum += percentageValue >= 0 ? percentageValue : 0;
-                    negativeSum += percentageValue < 0 ? percentageValue : 0;
                 }
+
+                ++sum;
             });
         });
 
@@ -417,10 +394,10 @@ export class DataViewConverter {
         const colorHelper = new ColorHelper(
             hostService.colorPalette,
             {
-                objectName: "dataPoint",
-                propertyName: "fill"
+                objectName: 'dataPoint',
+                propertyName: 'fill',
             },
-            settings.dataPoint.fill
+            settings.dataPoint.fill,
         );
 
         categoryColumn.values.forEach((category, i) => {
@@ -429,7 +406,7 @@ export class DataViewConverter {
                 colorSaturation: number = colorSaturationCol && colorSaturationCol.values[i] ? columns[Field.Gradient].values[i] : null;
 
             const columnBy: PrimitiveValue = columns[Field.ColumnBy] && columns[Field.ColumnBy][0].values[i],
-            rowBy: PrimitiveValue = columns[Field.RowBy] && columns[Field.RowBy][0].values[i];
+                rowBy: PrimitiveValue = columns[Field.RowBy] && columns[Field.RowBy][0].values[i];
 
 
             const identity: ISelectionId = hostService.createSelectionIdBuilder()
@@ -439,7 +416,7 @@ export class DataViewConverter {
             if (value != null) {
                 const color = colorHelper.getColorForMeasure(
                     categoryColumn.objects && categoryColumn.objects[i],
-                    "");
+                    '');
 
                 const tooltipItems: VisualTooltipDataItem[] = [];
 
@@ -447,7 +424,7 @@ export class DataViewConverter {
                     valueMetadata: DataViewMetadataColumn = columns[Field.Value].source;
 
                 tooltipItems.push(this.createTooltipData(categoryMetadata, category));
-                tooltipItems.push(this.createPercentTooltipData(valueMetadata, value, 1));
+                tooltipItems.push(this.createTooltipData(valueMetadata, value));
 
                 if (columns[Field.Tooltips] && columns[Field.Tooltips].length) {
                     columns[Field.Tooltips].forEach(tooltipColumn => {
@@ -459,18 +436,16 @@ export class DataViewConverter {
                 }
 
                 data.push({
-                    category: category !== 0 && !category ? "(Blank)" : category,
+                    category: category !== 0 && !category ? '(Blank)' : category,
                     value: value,
-                    percentValue: 1,
-                    percentValueForWidth: 1,
-                    shiftValue: value >= 0 ? 0 : -1,
+                    shiftValue: 1,
                     colorSaturation: colorSaturation,
                     selected: false,
                     identity: identity,
                     color: color,
                     tooltips: tooltipItems,
                     columnBy: columnBy,
-                    rowBy: rowBy
+                    rowBy: rowBy,
                 });
 
                 const highlightValue: number = columns[Field.Value].highlights ? columns[Field.Value].highlights[i] : null;
@@ -478,23 +453,19 @@ export class DataViewConverter {
                 if (highlightValue != null) {
                     const highlightTooltipItems: VisualTooltipDataItem[] = tooltipItems.slice();
 
-                    highlightTooltipItems.push(this.createPercentTooltipData(valueMetadata, highlightValue, 1, this.Highlighted));
-
-                    const percentValue: number = highlightValue / value;
+                    highlightTooltipItems.push(this.createTooltipData(valueMetadata, highlightValue, this.Highlighted));
 
                     data.push({
-                        category: category !== 0 && !category ? "(Blank)" : category,
+                        category: category !== 0 && !category ? '(Blank)' : category,
                         value: highlightValue,
-                        percentValue: percentValue,
-                        percentValueForWidth: percentValue,
-                        shiftValue: highlightValue >= 0 ? 0 : -percentValue,
+                        shiftValue: 1,
                         selected: false,
                         identity: identity,
                         highlight: true,
                         color: color,
                         tooltips: highlightTooltipItems,
                         columnBy: columnBy,
-                        rowBy: rowBy
+                        rowBy: rowBy,
                     });
                 }
             }
@@ -551,7 +522,7 @@ export class DataViewConverter {
         const categorical: DataViewCategorical | undefined = dataView && dataView.categorical;
         const categories: DataViewCategoricalColumn[] = categorical && categorical.categories || [];
         const values: DataViewValueColumns | undefined = categorical && categorical.values;
-        
+
         const data: VisualColumns = new VisualColumns();
 
         if (categorical && values) {
@@ -622,14 +593,7 @@ export class DataViewConverter {
     private static createTooltipData(metadataColumn: DataViewMetadataColumn, value: PrimitiveValue, displayName?: string): VisualTooltipDataItem {
         return {
             displayName: displayName ? displayName : metadataColumn.displayName,
-            value: this.getFormattedValue(metadataColumn, value) || ''
-        };
-    }
-
-    private static createPercentTooltipData(metadataColumn: DataViewMetadataColumn, value: PrimitiveValue, percentValue: PrimitiveValue, displayName?: string): VisualTooltipDataItem {
-        return {
-            displayName: displayName ? displayName : metadataColumn.displayName,
-            value: this.getFormattedValue(metadataColumn, value) + " (" + ValueFormatter.format(percentValue, this.percentFormatString) + ")"
+            value: this.getFormattedValue(metadataColumn, value) || '',
         };
     }
 
@@ -644,13 +608,13 @@ export class DataViewConverter {
         return ValueFormatter.format(value, formatString);
     }
 
-    private static getFormatStringFromColumn(column: DataViewMetadataColumn): string | undefined {
+    private static getFormatStringFromColumn(column: DataViewMetadataColumn): string {
         if (column) {
             const formatString: string = ValueFormatter.getFormatStringByColumn(<any>column, false);
 
             return formatString || column.format;
         }
 
-        return undefined;
+        return null;
     }
 }

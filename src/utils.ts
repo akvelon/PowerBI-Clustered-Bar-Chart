@@ -1,33 +1,44 @@
-"use strict";
+'use strict';
 
-import { Selection } from 'd3-selection';
-import { AxisRangeType, categoryAxisSettings, categoryLabelsSettings, valueAxisSettings, VisualSettings } from "./settings";
-import { IAxes, ISize, VisualData, VisualDataPoint, VisualMeasureMetadata } from "./visualInterfaces";
+import {Selection} from 'd3-selection';
+import {
+    AxisRangeType,
+    categoryAxisSettings,
+    categoryLabelsSettings,
+    valueAxisSettings,
+    VisualSettings,
+} from './settings';
+import {IAxes, ISize, VisualData, VisualDataPoint, VisualMeasureMetadata} from './visualInterfaces';
+
 export type d3Selection<T> = Selection<any, T, any, any>;
 export type d3Update<T> = Selection<any, T, any, any>;
 export type d3Group<T> = Selection<any, T, any, any>;
 
-import powerbiApi from "powerbi-visuals-api";
+import powerbiApi from 'powerbi-visuals-api';
 import DataViewMetadataColumn = powerbiApi.DataViewMetadataColumn;
 import DataView = powerbiApi.DataView;
 
-import { axis } from "powerbi-visuals-utils-chartutils";
+import {axis} from 'powerbi-visuals-utils-chartutils';
 
-import { textMeasurementService as TextMeasurementService, interfaces, valueFormatter as ValueFormatter } from "powerbi-visuals-utils-formattingutils";
+import {
+    textMeasurementService as TextMeasurementService,
+    interfaces,
+    valueFormatter as ValueFormatter,
+} from 'powerbi-visuals-utils-formattingutils';
 import TextProperties = interfaces.TextProperties;
 import IValueFormatter = ValueFormatter.IValueFormatter;
 
-import { valueType } from "powerbi-visuals-utils-typeutils";
+import {valueType} from 'powerbi-visuals-utils-typeutils';
 
-import * as formattingUtils from "./utils/formattingUtils";
-import { DataLabelHelper } from "./utils/dataLabelHelper";
+import * as formattingUtils from './utils/formattingUtils';
+import {DataLabelHelper} from './utils/dataLabelHelper';
 
 
-import * as visualUtils from "./utils";
+import * as visualUtils from './utils';
 
-import { Field } from "./dataViewConverter";
-import { IAxisProperties } from "powerbi-visuals-utils-chartutils/lib/axis/axisInterfaces";
-import { max, min } from 'd3-array';
+import {Field} from './dataViewConverter';
+import {IAxisProperties} from 'powerbi-visuals-utils-chartutils/lib/axis/axisInterfaces';
+import {max, min} from 'd3-array';
 
 const DisplayUnitValue: number = 1;
 
@@ -36,21 +47,21 @@ export function calculateBarCoordianatesByData(data: VisualData, settings: Visua
     const axes: IAxes = data.axes;
 
     const legendDataPointsCount: number = data.legendData
-                                                && data.legendData.dataPoints ? data.legendData.dataPoints.length : 1;
+    && data.legendData.dataPoints ? data.legendData.dataPoints.length : 1;
 
     this.calculateBarCoordianates(dataPoints, legendDataPointsCount, axes, settings, dataPointThickness, isSmallMultiple);
 }
 
-export function calculateBarCoordianates(dataPoints: VisualDataPoint[], 
-                                        clustersCount: number, 
-                                        axes: IAxes, 
-                                        settings: VisualSettings, 
-                                        dataPointThickness: number, 
-                                        isSmallMultiple: boolean = false): void {
+export function calculateBarCoordianates(dataPoints: VisualDataPoint[],
+                                         clustersCount: number,
+                                         axes: IAxes,
+                                         settings: VisualSettings,
+                                         dataPointThickness: number,
+                                         isSmallMultiple: boolean = false): void {
 
     const skipCategoryStartEnd: boolean = isSmallMultiple && settings.categoryAxis.rangeType !== AxisRangeType.Custom;
 
-    const categoryAxisIsContinuous: boolean | undefined = axes.yIsScalar && settings.categoryAxis.axisType !== "categorical";
+    const categoryAxisIsContinuous: boolean | undefined = axes.yIsScalar && settings.categoryAxis.axisType !== 'categorical';
 
     const categoryAxisStartValue: number = categoryAxisIsContinuous && settings.categoryAxis.start ? settings.categoryAxis.start : 0;
     const categoryAxisEndValue: number = categoryAxisIsContinuous && settings.categoryAxis.end ? settings.categoryAxis.end : Number.MAX_VALUE;
@@ -70,9 +81,9 @@ export function calculateBarCoordianates(dataPoints: VisualDataPoint[],
             height = axes.y.scale.bandwidth() / clustersCount;
         }
 
-        if (categoryAxisIsContinuous){
+        if (categoryAxisIsContinuous) {
             const categoryvalueIsInRange: boolean = point.category >= categoryAxisStartValue && point.category <= categoryAxisEndValue;
-            if (!categoryvalueIsInRange){
+            if (!categoryvalueIsInRange) {
                 setZeroCoordinatesForPoint(point);
                 return;
             }
@@ -83,7 +94,7 @@ export function calculateBarCoordianates(dataPoints: VisualDataPoint[],
         if (categoryAxisIsContinuous) {
             y -= height * clustersCount / 2;
         }
-        if ( clustersCount > 1  && point.shiftValue){
+        if (clustersCount > 1 && point.shiftValue) {
             y += height * point.shiftValue;
         }
 
@@ -105,20 +116,20 @@ export function calculateBarCoordianates(dataPoints: VisualDataPoint[],
 
         if (minValue && toValue < minValue) {
             setZeroCoordinatesForPoint(point);
-            return;                
+            return;
         } else if (maxValue && toValue > maxValue) {
             toValue = maxValue;
         }
 
         const toCoordinate: number = axes.x.scale(toValue);
 
-        if ( toCoordinate <= fromCoordinate ){
+        if (toCoordinate <= fromCoordinate) {
             setZeroCoordinatesForPoint(point);
             return;
         }
 
         let volume: number = toCoordinate - fromCoordinate;
-        if (volume < 1 && volume !== 0){
+        if (volume < 1 && volume !== 0) {
             volume = 1;
         }
 
@@ -126,7 +137,7 @@ export function calculateBarCoordianates(dataPoints: VisualDataPoint[],
             height: height,
             width: volume, //volume,
             y,
-            x: fromCoordinate
+            x: fromCoordinate,
         };
     });
 
@@ -165,12 +176,12 @@ export function recalculateThicknessForContinuous(dataPoints: VisualDataPoint[],
     if (dataPointThickness && dataPointThickness !== minHeight) {
         dataPointsSorted.forEach(d => {
             const oldHeight: number = d.barCoordinates.height;
-            d.barCoordinates.height = oldHeight ? minHeight : 0;                
+            d.barCoordinates.height = oldHeight ? minHeight : 0;
             d.barCoordinates.y = d.barCoordinates.y + dataPointThickness / 2 - oldHeight * d.shiftValue;
 
             d.barCoordinates.y -= minHeight / 2;
-            
-            if ( clustersCount > 1 ){
+
+            if (clustersCount > 1) {
                 d.barCoordinates.y += minHeight * d.shiftValue;
             }
         });
@@ -178,11 +189,11 @@ export function recalculateThicknessForContinuous(dataPoints: VisualDataPoint[],
 }
 
 export function calculateLabelCoordinates(data: VisualData,
-                                        settings: categoryLabelsSettings,
-                                        metadata: VisualMeasureMetadata,
-                                        chartWidth: number,
-                                        isLegendRendered: boolean,
-                                        dataPoints?: VisualDataPoint[]) {
+                                          settings: categoryLabelsSettings,
+                                          metadata: VisualMeasureMetadata,
+                                          chartWidth: number,
+                                          isLegendRendered: boolean,
+                                          dataPoints?: VisualDataPoint[]) {
     if (!settings.show) {
         return;
     }
@@ -190,9 +201,9 @@ export function calculateLabelCoordinates(data: VisualData,
     const dataPointsArray: VisualDataPoint[] = dataPoints || data.dataPoints;
 
     const dataLabelFormatter: IValueFormatter = formattingUtils.createFormatter(settings.displayUnits,
-                                                                    settings.precision,
-                                                                    metadata.cols.value,
-                                                                    formattingUtils.getValueForFormatter(data));
+        settings.precision,
+        metadata.cols.value,
+        formattingUtils.getValueForFormatter(data));
 
     const textPropertiesForWidth: TextProperties = formattingUtils.getTextProperties(settings);
     const textPropertiesForHeight: TextProperties = formattingUtils.getTextPropertiesForHeightCalculation(settings);
@@ -216,7 +227,7 @@ export function calculateLabelCoordinates(data: VisualData,
                     x: dx,
                     y: dy,
                     width: textWidth,
-                    height: textHeight
+                    height: textHeight,
                 };
             } else {
                 dataPoint.labelCoordinates = null;
@@ -246,14 +257,14 @@ export function getLineStyleParam(lineStyle) {
     let strokeDasharray;
 
     switch (lineStyle) {
-        case "solid":
-            strokeDasharray = "none";
+        case 'solid':
+            strokeDasharray = 'none';
             break;
-        case "dashed":
-            strokeDasharray = "7, 5";
+        case 'dashed':
+            strokeDasharray = '7, 5';
             break;
-        case "dotted":
-            strokeDasharray = "2, 2";
+        case 'dotted':
+            strokeDasharray = '2, 2';
             break;
     }
 
@@ -272,15 +283,15 @@ export function getUnitType(xAxis: IAxisProperties): string | null {
 }
 
 export function getTitleWithUnitType(title, axisStyle, axis: IAxisProperties): string | null {
-    const unitTitle = visualUtils.getUnitType(axis) || "No unit";
+    const unitTitle = visualUtils.getUnitType(axis) || 'No unit';
     switch (axisStyle) {
-        case "showUnitOnly": {
+        case 'showUnitOnly': {
             return unitTitle;
         }
-        case "showTitleOnly": {
+        case 'showTitleOnly': {
             return title;
         }
-        case "showBoth": {
+        case 'showBoth': {
             return `${title} (${unitTitle})`;
         }
     }
@@ -304,7 +315,7 @@ const CategoryMaxHeight: number = 130;
 
 export function calculateBarHeight(
     visualDataPoints: VisualDataPoint[],
-    visualSize: ISize, 
+    visualSize: ISize,
     categoriesCount: number,
     categoryInnerPadding: number,
     settings: VisualSettings,
@@ -313,7 +324,7 @@ export function calculateBarHeight(
     const currentBarHeight = visualSize.height / categoriesCount;
     let barHeight: number = 0;
 
-    if (settings.categoryAxis.axisType === "categorical") {
+    if (settings.categoryAxis.axisType === 'categorical') {
         const innerPadding: number = categoryInnerPadding / 100;
         barHeight = min([CategoryMaxHeight, max([CategoryMinHeight, currentBarHeight])]) * (1 - innerPadding);
     } else {
@@ -325,8 +336,8 @@ export function calculateBarHeight(
             end = skipStartEnd ? null : settings.categoryAxis.end;
 
         if (start != null || end != null) {
-            dataPoints = dataPoints.filter(x => start != null ? x.value >= start : true 
-                                            &&  end != null ? x.value <= end : true)
+            dataPoints = dataPoints.filter(x => start != null ? x.value >= start : true
+            && end != null ? x.value <= end : true);
         }
 
         const dataPointsCount: number = dataPoints.map(x => x.category).filter((v, i, a) => a.indexOf(v) === i).length;
@@ -338,7 +349,7 @@ export function calculateBarHeight(
             const devider: number = 3.75;
             barHeight = visualSize.height / devider;
         } else {
-            const devider: number = 3.75 + 1.25 * (dataPointsCount - 3); 
+            const devider: number = 3.75 + 1.25 * (dataPointsCount - 3);
             barHeight = visualSize.height / devider;
         }
     }
@@ -384,7 +395,7 @@ export function GetYAxisTitleThickness(valueSettings: valueAxisSettings): number
 
     const textPropertiesForHeight: TextProperties = {
         fontFamily: valueSettings.titleFontFamily,
-        fontSize: valueSettings.titleFontSize.toString()
+        fontSize: valueSettings.titleFontSize.toString(),
     };
 
     return TextMeasurementService.estimateSvgTextHeight(textPropertiesForHeight);
@@ -394,7 +405,7 @@ export function GetXAxisTitleThickness(categorySettings: categoryAxisSettings): 
 
     const textPropertiesForHeight: TextProperties = {
         fontFamily: categorySettings.titleFontFamily,
-        fontSize: categorySettings.titleFontSize.toString()
+        fontSize: categorySettings.titleFontSize.toString(),
     };
 
     return TextMeasurementService.estimateSvgTextHeight(textPropertiesForHeight);

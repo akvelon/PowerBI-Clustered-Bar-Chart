@@ -26,7 +26,7 @@
         {
             "displayName": "Color saturation",
             "name": "Gradient",
-            "kind": "Measure",            
+            "kind": "Measure",
             "requiredTypes": [
                 {
                     "numeric": true
@@ -54,7 +54,7 @@
     ],
     "objects": {
         "selectionSaveSettings": {
-            "displayName": "Selection save settigns",
+            "displayName": "Selection save settings",
             "displayNameKey": "Visual_SelectionSaveSettings",
             "properties": {
                 "selection": {
@@ -118,7 +118,7 @@
                                 "color": true
                             }
                         }
-                    }                   
+                    }
                 },
                 "fontFamily": {
                     "displayName": "Font Family",
@@ -237,7 +237,7 @@
                                 "color": true
                             }
                         }
-                    }                   
+                    }
                 },
                 "showSeparators": {
                     "displayName": "Show Separators",
@@ -565,7 +565,7 @@
                                 "displayName": "Custom",
                                 "value": "custom"
                             }
-                        ] 
+                        ]
                     }
                 },
                 "rangeTypeNoScalar": {
@@ -580,7 +580,7 @@
                                 "displayName": "Separate",
                                 "value": "separate"
                             }
-                        ] 
+                        ]
                     }
                 },
                 "start": {
@@ -941,7 +941,7 @@
                                 "displayName": "Custom",
                                 "value": "custom"
                             }
-                        ] 
+                        ]
                     }
                 },
                 "start": {
@@ -1374,7 +1374,7 @@
                             }
                         ]
                     }
-                },                
+                },
                 "overflowText": {
                     "displayName": "Overflow text",
                     "displayNameKey": "Visual_OverflowText",
@@ -1730,7 +1730,7 @@
                             "for": {
                                 "in": "RowBy"
                             }
-                        }                        
+                        }
                     ]
                 },
                 "values": {
