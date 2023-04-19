@@ -88,7 +88,6 @@ import {pixelConverter as PixelConverter} from 'powerbi-visuals-utils-typeutils'
 
 import {LassoSelectionForSmallMultiple} from './lassoSelectionUtilForSmallMultiple';
 
-
 class Selectors {
     public static MainSvg = CssConstants.createClassAndSelector('bar-chart-svg');
     public static VisualSvg = CssConstants.createClassAndSelector('bar-chart-visual');
