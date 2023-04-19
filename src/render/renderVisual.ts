@@ -211,18 +211,20 @@ export class RenderVisual {
             return;
         }
 
-        const dataPointsArray: VisualDataPoint[] = this.filterData(dataPoints || data.dataPoints),
-            backgroundSelection: d3Selection<VisualDataPoint> = dataLabelsBackgroundContext
-                .selectAll(RenderVisual.Label.selectorName)
-                .data(dataPointsArray);
+        const dataPointsArray: VisualDataPoint[] = this.filterData(dataPoints || data.dataPoints);
+        let backgroundSelection = dataLabelsBackgroundContext
+            .selectAll(RenderVisual.Label.selectorName)
+            .data(dataPointsArray);
 
         backgroundSelection
             .exit()
             .remove();
 
-        backgroundSelection
+        const backgroundSelectionEnter = backgroundSelection
             .enter()
             .append('svg:rect');
+
+        backgroundSelection = backgroundSelection.merge(backgroundSelectionEnter);
 
         backgroundSelection
             .attr(
@@ -281,10 +283,10 @@ export class RenderVisual {
         }
 
         const dataPointsArray: VisualDataPoint[] = this.filterData(dataPoints || data.dataPoints);
+
         let labelSelection: d3Update<VisualDataPoint> = dataLabelsContext
             .selectAll(RenderVisual.Label.selectorName)
             .data(dataPointsArray);
-
 
         labelSelection
             .exit()
