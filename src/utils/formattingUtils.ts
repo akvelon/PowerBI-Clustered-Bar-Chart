@@ -21,7 +21,7 @@ export function createFormatter(displayUnits: number, precision: number, column:
         value: displayUnits === 0 && value ? value : displayUnits,
         value2: 0,
         precision: precision,
-        format: this.getFormatStringByColumn(column)
+        format: getFormatStringByColumn(column)
     });
 }
 
