@@ -2,14 +2,13 @@
   "visual": {
     "name": "clusteredBarChartByAkvelon",
     "guid": "clusteredBarChartByAkvelon77BB704116614231891ABD5C195D3DC6",
-    "displayName": "Clustered Bar Chart by Akvelon 1.2.4",
+    "displayName": "Clustered Bar Chart by Akvelon 2.0.0",
     "visualClassName": "Visual",
-    "version": "1.2.4",
+    "version": "2.0.0",
     "description": "Clustered Bar Chart with rectangle selection support",
     "supportUrl": "http://akvelon.com/feedback",
     "gitHubUrl": ""
   },
-  "apiVersion": "1.13.0",
   "author": {
     "name": "Akvelon Inc",
     "email": "pbisupport@akvelon.com"
@@ -17,21 +16,8 @@
   "assets": {
     "icon": "assets/icon.png"
   },
-  "externalJS": [
-    "node_modules/d3/d3.min.js",
-    "node_modules/globalize/lib/globalize.js",
-    "node_modules/globalize/lib/cultures/globalize.culture.en-US.js",
-    "node_modules/powerbi-visuals-utils-dataviewutils/lib/index.js",
-    "node_modules/powerbi-visuals-utils-typeutils/lib/index.js",
-    "node_modules/powerbi-visuals-utils-svgutils/lib/index.js",
-    "node_modules/powerbi-visuals-utils-interactivityutils/lib/index.js",
-    "node_modules/powerbi-visuals-utils-tooltiputils/lib/index.js",
-    "node_modules/powerbi-visuals-utils-formattingutils/lib/index.js",
-    "node_modules/powerbi-visuals-utils-chartutils/lib/index.js",
-    "node_modules/powerbi-visuals-utils-colorutils/lib/index.js"
-  ],
+  "externalJS": [],
   "style": "style/visual.less",
   "capabilities": "capabilities.json",
-  "dependencies": "dependencies.json",
   "stringResources": []
 }
